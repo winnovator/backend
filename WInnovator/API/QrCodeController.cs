@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using QRCoder;
 
 namespace WInnovator.API
 {
@@ -17,6 +12,10 @@ namespace WInnovator.API
     [ApiController]
     public class QrCodeController : ControllerBase
     {
+        /// <summary>
+        /// Gets a default QrCode
+        /// </summary>
+        /// <returns>An image containing the specified QrCode</returns>
         [HttpGet]
         public IActionResult Get()
         {
