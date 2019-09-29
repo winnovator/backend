@@ -43,6 +43,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!--
+      Needed for importing commentline in Swashbuckle,
+      see https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.0&tabs=visual-studio
+  -->
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
