@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
 using System.Drawing;
@@ -17,13 +18,22 @@ namespace WInnovator.API
         /// </summary>
         /// <returns>An image containing the specified QrCode</returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get()
         {
-            var qrCode = createQrCode();
-            var outputStream = new MemoryStream();
-            qrCode.Save(outputStream, ImageFormat.Jpeg);
-            outputStream.Seek(0, SeekOrigin.Begin);
-            return File(outputStream, "image/jpeg");
+            try
+            {
+                var qrCode = createQrCode();
+                var outputStream = new MemoryStream();
+                qrCode.Save(outputStream, ImageFormat.Jpeg);
+                outputStream.Seek(0, SeekOrigin.Begin);
+                return File(outputStream, "image/jpeg");
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         private Bitmap createQrCode()
