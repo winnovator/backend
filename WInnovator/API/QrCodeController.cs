@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -13,6 +14,13 @@ namespace WInnovator.API
     [ApiController]
     public class QrCodeController : ControllerBase
     {
+        private ILogger<QrCodeController> _logger;
+
+        public QrCodeController(ILogger<QrCodeController> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Gets a default QrCode
         /// </summary>
@@ -28,10 +36,12 @@ namespace WInnovator.API
                 var outputStream = new MemoryStream();
                 qrCode.Save(outputStream, ImageFormat.Jpeg);
                 outputStream.Seek(0, SeekOrigin.Begin);
+                _logger.LogInformation("QrCode being served");
                 return File(outputStream, "image/jpeg");
             }
             catch
             {
+                _logger.LogError("OOPS... something went wrong!!");
                 return NotFound();
             }
         }
