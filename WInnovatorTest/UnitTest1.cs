@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using WInnovator.API;
 using Xunit;
 
@@ -10,7 +12,8 @@ namespace WInnovatorTest
         public void TestQrCode_GetOK()
         {
             // Arrange
-            var controller = new QrCodeController();
+            ILogger<QrCodeController> logger = Mock.Of<ILogger<QrCodeController>>();
+            var controller = new QrCodeController(logger);
 
             // Act
             var result = controller.Get();
