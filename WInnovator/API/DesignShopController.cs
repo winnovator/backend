@@ -80,7 +80,7 @@ namespace WInnovator.API
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost("create")]
-        public async Task<ActionResult<DesignShop>> PostDesignShop()
+        public async Task<ActionResult<DesignShop>> CreateDesignShop()
         {
             // Currently, we only need an empty DesignShop so we'll create it here.
             _logger.LogTrace("Creating new Design Shop.");
