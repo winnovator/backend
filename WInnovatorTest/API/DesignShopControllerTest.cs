@@ -76,5 +76,17 @@ namespace WInnovatorTest.API
             var firstResult = Assert.IsType<ActionResult<DesignShopViewModel>>(result);
             var secondResult = Assert.IsType<NotFoundResult>(firstResult.Result);
         }
+        
+        [Fact]
+        public async Task Test5_CallGetQrCodeUnknownGuid_ExpectNotFoundResult()
+        {
+            // Act
+            var result = await _fixture._controller.GetQrCode(new System.Guid());
+
+            // Assert
+            //var firstResult = Assert.IsType<ActionResult<DesignShopViewModel>>(result);
+            var firstResult = Assert.IsType<NotFoundResult>(result);
+        }
+
     }
 }

@@ -42,12 +42,12 @@ namespace WInnovator.API
         [HttpGet("{id}")]
         public async Task<ActionResult<DesignShopViewModel>> GetDesignShop(Guid id)
         {
-            var designShop = await _context.DesignShop.Include(shop => shop.UploadedImages).FirstOrDefaultAsync(shop => shop.Id == id);
-
-            if (designShop == null)
+            if (!DesignShopExists(id))
             {
                 return NotFound();
             }
+
+            var designShop = await _context.DesignShop.Include(shop => shop.UploadedImages).FirstOrDefaultAsync(shop => shop.Id == id);
 
             return new DesignShopViewModel { Id=designShop.Id, numberOfUploadedImages=designShop.UploadedImages.Count };
         }
@@ -61,12 +61,12 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetQrCode(Guid id)
         {
-            var designShop = await _context.DesignShop.Include(shop => shop.UploadedImages).FirstOrDefaultAsync(shop => shop.Id == id);
-
-            if (designShop == null)
+            if (!DesignShopExists(id))
             {
                 return NotFound();
             }
+            
+            var designShop = await _context.DesignShop.Include(shop => shop.UploadedImages).FirstOrDefaultAsync(shop => shop.Id == id);
 
             try
             {
@@ -164,7 +164,6 @@ namespace WInnovator.API
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(guid.ToString(), QRCodeGenerator.ECCLevel.H);
             QRCode qrCode = new QRCode(qrCodeData);
             return qrCode.GetGraphic(150, darkColor, lightColor, icon, 25, 20);
-
         }
 
     }
