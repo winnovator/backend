@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>aspnet-WInnovator-431AF958-23AD-455F-A7A6-BAA15F5DD614</UserSecretsId>
+    <DebugType>Full</DebugType>
+    <ProjectGuid>{17afa6d9-ba66-4ba1-9cc5-34ba50d67f46}</ProjectGuid>
   </PropertyGroup>
 
 
