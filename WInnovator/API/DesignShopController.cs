@@ -163,7 +163,7 @@ namespace WInnovator.API
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(guid.ToString(), QRCodeGenerator.ECCLevel.H);
             QRCode qrCode = new QRCode(qrCodeData);
-            return qrCode.GetGraphic(150, darkColor, lightColor, icon, 25, 20);
+            return qrCode.GetGraphic(20, darkColor, lightColor, icon, 25, 20);
         }
 
     }
