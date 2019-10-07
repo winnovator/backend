@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WInnovator
 {
@@ -10,7 +11,7 @@ namespace WInnovator
     /*
      * 2019-09-30   s1109856    Added NLog logging per https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-2
      */
-
+    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)

@@ -7,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using WInnovator.Data;
 
 namespace WInnovator
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         private bool isDev;
