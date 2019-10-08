@@ -102,25 +102,25 @@ namespace WInnovator.API
         //}
 
         // POST: api/UploadImageStore
-        [HttpPost]
-        public async Task<ActionResult<UploadImageStore>> PostUploadImageStore(Guid designShopId, IFormFile uploadedImage)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<UploadImageStore>> PostUploadImageStore(Guid designShopId, IFormFile uploadedFile)
         {
-            if(uploadedImage==null || designShopId == null)
+            if(uploadedFile==null || designShopId == null)
             { 
                 return BadRequest();
             }
-            if(!contentHasImageMimetype(uploadedImage.ContentType) || !contentHasImageExtension(Path.GetExtension(uploadedImage.FileName)))
+            if(!contentHasImageMimetype(uploadedFile.ContentType) || !contentHasImageExtension(Path.GetExtension(uploadedFile.FileName)))
             {
                 return BadRequest();
             }
 
             UploadImageStore uploadImageStore = new UploadImageStore();
             uploadImageStore.DesignShopId = designShopId;
-            uploadImageStore.Mimetype = uploadedImage.ContentType;
+            uploadImageStore.Mimetype = uploadedFile.ContentType;
 
             using (var memoryStream = new MemoryStream())
             {
-                await uploadedImage.CopyToAsync(memoryStream);
+                await uploadedFile.CopyToAsync(memoryStream);
                 uploadImageStore.UploadedImage = memoryStream.ToArray();
             }
 
