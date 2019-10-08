@@ -102,7 +102,9 @@ namespace WInnovator.API
         //}
 
         // POST: api/UploadImageStore
-        [HttpPost("{id}")]
+        [HttpPost("{designShopId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UploadImageStore>> PostUploadImageStore(Guid designShopId, IFormFile uploadedFile)
         {
             if(uploadedFile==null || designShopId == null)
