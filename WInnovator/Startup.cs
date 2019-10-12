@@ -17,7 +17,7 @@ namespace WInnovator
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private bool isDev;
+        private readonly bool isDev;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -91,15 +91,12 @@ namespace WInnovator
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                     // we want to serve the Swagger UI at the app's root (http://localhost:<port>/), so the RoutePrefix property has to be set to an empty string
-                    //c.RoutePrefix = string.Empty;
                     c.RoutePrefix = "swagger";
                 });
             }
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
             }
 
             app.UseHttpsRedirection();

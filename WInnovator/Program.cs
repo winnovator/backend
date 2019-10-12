@@ -12,7 +12,7 @@ namespace WInnovator
      * 2019-09-30   s1109856    Added NLog logging per https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-2
      */
     [ExcludeFromCodeCoverage]
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {

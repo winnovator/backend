@@ -1,10 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\example.pdf" />
+    <None Remove="Resources\example1.png" />
+    <None Remove="Resources\example2.png" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.7.0">
@@ -23,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WInnovator\WInnovator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

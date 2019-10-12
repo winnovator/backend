@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using WInnovator.Models;
+using Microsoft.AspNetCore.Mvc;
 using WInnovator.ViewModels;
+using WInnovatorTest.API.Fixtures;
 using Xunit;
 
 // See https://xunit.net/docs/shared-context for use of Fixture! (Has to be documented in SAD)
@@ -20,24 +22,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test1_DesignShopCreate()
-        {
-            // Act
-            var result = await _fixture._controller.CreateDesignShop();
-
-            // Assert
-            // Peel off seperate layers
-            var firstResult = Assert.IsType<ActionResult<DesignShop>>(result);
-            var secondResult = Assert.IsType<CreatedAtActionResult>(firstResult.Result);
-            // Finally we get the desired value, cast it to use it
-            _fixture._createdDesignShop = (DesignShop)secondResult.Value;
-            // Assert that we got an ID
-            Assert.False(string.IsNullOrEmpty(_fixture._createdDesignShop.Id.ToString()));
-
-        }
-
-        [Fact]
-        public async Task Test2_GetListOfPresentDesignShops()
+        public async Task Test1_GetListOfPresentDesignShops()
         {
             // Act
             // Task<ActionResult<IEnumerable<DesignShopViewModel>>> GetDesignShop
@@ -50,43 +35,29 @@ namespace WInnovatorTest.API
             List<DesignShopViewModel> listOfDesignShops = Assert.IsType<List<DesignShopViewModel>>(firstResult.Value);
 
             // Assert that we've got one (1) item
-            Assert.True(listOfDesignShops.Count == 1);
+            Assert.True(listOfDesignShops.Count == 13);
             // Assert that we got the ID of the design shop that's made in the first test
-            Assert.True(listOfDesignShops[0].Id == _fixture._createdDesignShop.Id);
-
+            Assert.True(listOfDesignShops.Count(shop => shop.Id == _fixture._designShop.Id) == 1);
         }
 
         [Fact]
-        public async Task Test3_GetQrCodeForDesignShopCreatedInFirstTest_GetFileStreamResult()
+        public async Task Test2_GetQrCodeForValidDesignShop()
         {
             // Act
-            var qrcodeFirstResult = await _fixture._controller.GetQrCode(_fixture._createdDesignShop.Id);
+            var qrcodeFirstResult = await _fixture._controller.GetQrCode(_fixture._designShop.Id);
 
             // Assert
             Assert.IsType<FileStreamResult>(qrcodeFirstResult);
         }
 
         [Fact]
-        public async Task Test4_CallGetDesignShopWithUnknownGuid_ExpectNotFoundResult()
+        public async Task Test3_GetQrCodeForInvalidDesignShop()
         {
             // Act
-            var result = await _fixture._controller.GetDesignShop(new System.Guid());
+            var qrcodeFirstResult = await _fixture._controller.GetQrCode(new Guid());
 
             // Assert
-            var firstResult = Assert.IsType<ActionResult<DesignShopViewModel>>(result);
-            var secondResult = Assert.IsType<NotFoundResult>(firstResult.Result);
+            Assert.IsType<NotFoundResult>(qrcodeFirstResult);
         }
-        
-        [Fact]
-        public async Task Test5_CallGetQrCodeUnknownGuid_ExpectNotFoundResult()
-        {
-            // Act
-            var result = await _fixture._controller.GetQrCode(new System.Guid());
-
-            // Assert
-            //var firstResult = Assert.IsType<ActionResult<DesignShopViewModel>>(result);
-            var firstResult = Assert.IsType<NotFoundResult>(result);
-        }
-
     }
 }
