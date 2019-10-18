@@ -46,7 +46,7 @@ namespace WInnovator
                 .UseNLog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:8080;https://*:8081");
+                    webBuilder.UseUrls("http://*:8080");
                     webBuilder.UseStartup<Startup>();
                 });
     }
