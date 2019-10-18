@@ -17,12 +17,12 @@ namespace WInnovator
     [ExcludeFromCodeCoverage]
     public class Startup
     {
-        private readonly bool isDev;
+        private readonly bool isProduction;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
-            isDev = env.IsDevelopment();
+            isProduction = env.IsProduction();
         }
 
         public IConfiguration Configuration { get; }
@@ -37,26 +37,29 @@ namespace WInnovator
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Add authentication via Google and Twitter
-            services.AddAuthentication()
-                // Google authentication per https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-3.0
-                .AddGoogle(googleOptions =>
-                {
-                    IConfigurationSection googleAuthNSection =
-                        Configuration.GetSection("Authentication:Google");
+            services.AddAuthentication();
 
-                    googleOptions.ClientId = googleAuthNSection["ClientId"];
-                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
-                })
-                // Twitter authentication per https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/twitter-logins?view=aspnetcore-3.0
-                .AddTwitter(twitterOptions =>
-                {
-                    IConfigurationSection twitterAuthNSection =
-                        Configuration.GetSection("Authentication:Twitter");
+            // We currently don't have a valid usecase for Google and/or Twitter authentication, so we're gonna disable it for this moment.
 
-                    twitterOptions.ConsumerKey = twitterAuthNSection["ConsumerKey"];
-                    twitterOptions.ConsumerSecret = twitterAuthNSection["ConsumerSecret"];
+                //// Google authentication per https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins?view=aspnetcore-3.0
+                //.AddGoogle(googleOptions =>
+                //{
+                //    IConfigurationSection googleAuthNSection =
+                //        Configuration.GetSection("Authentication:Google");
 
-                });
+                //    googleOptions.ClientId = googleAuthNSection["ClientId"];
+                //    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
+                //})
+                //// Twitter authentication per https://docs.microsoft.com/en-us/aspnet/core/security/authentication/social/twitter-logins?view=aspnetcore-3.0
+                //.AddTwitter(twitterOptions =>
+                //{
+                //    IConfigurationSection twitterAuthNSection =
+                //        Configuration.GetSection("Authentication:Twitter");
+
+                //    twitterOptions.ConsumerKey = twitterAuthNSection["ConsumerKey"];
+                //    twitterOptions.ConsumerSecret = twitterAuthNSection["ConsumerSecret"];
+
+                //});
 
             services.AddRazorPages();
             services.AddControllers();
@@ -77,8 +80,10 @@ namespace WInnovator
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (isDev)
+            if (!isProduction)
             {
+                // If we're NOT in a production environment, use the Developer Exception page, Database Error page and swagger
+
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
 
@@ -99,7 +104,6 @@ namespace WInnovator
                 app.UseExceptionHandler("/Error");
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
