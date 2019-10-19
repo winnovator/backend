@@ -57,27 +57,19 @@ namespace WInnovator.API
         [HttpGet("{id}/qrcode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetQrCode(Guid id)
+        public IActionResult GetQrCode(Guid id)
         {
             if (!DesignShopExists(id))
             {
                 return NotFound();
             }
 
-            try
-            {
-                var qrCode = createQrCode(id);
-                var outputStream = new MemoryStream();
-                qrCode.Save(outputStream, ImageFormat.Jpeg);
-                outputStream.Seek(0, SeekOrigin.Begin);
-                _logger.LogTrace($"QrCode for guid {id} being served");
-                return File(outputStream, "image/jpeg");
-            }
-            catch
-            {
-                _logger.LogError("OOPS... something went wrong!!");
-                return NotFound();
-            }
+            var qrCode = createQrCode(id);
+            var outputStream = new MemoryStream();
+            qrCode.Save(outputStream, ImageFormat.Jpeg);
+            outputStream.Seek(0, SeekOrigin.Begin);
+            _logger.LogTrace($"QrCode for guid {id} being served");
+            return File(outputStream, "image/jpeg");
         }
 
         // TODO! This has to be removed!!

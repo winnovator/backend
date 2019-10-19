@@ -15,10 +15,12 @@ namespace WInnovator.Models
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]      // https://stackoverflow.com/questions/5252979/assign-format-of-datetime-with-data-annotations
         public DateTime Date { get; set; }
-        [ForeignKey("DesignShopWorkingForm")]
         public Guid? CurrentDesignShopWorkingFormId { get; set; }
 
-        public virtual DesignShopWorkingForm CurrentWorkingForm { get; set; }
+#nullable enable
+        [ForeignKey("DesignShopWorkingForm")]
+        public virtual DesignShopWorkingForm? CurrentDesignShopWorkingForm { get; set; }
+#nullable restore
         public virtual ICollection<DesignShopWorkingForm> DesignShopWorkingForms { get; set; }
     }
 }
