@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System.Diagnostics.CodeAnalysis;
 using WInnovator.Models;
 
 namespace WInnovator.Data
@@ -31,7 +31,7 @@ namespace WInnovator.Data
             // Specify specific binding between DesignShop, WorkingForm and DesignShopWorkingForm
             
             builder.Entity<DesignShop>()
-                .HasOne<DesignShopWorkingForm>(ds => ds.CurrentWorkingForm)
+                .HasOne<DesignShopWorkingForm>(ds => ds.CurrentDesignShopWorkingForm)
                 .WithOne(dswf => dswf.IsCurrentWorkingForm);
 
             builder.Entity<DesignShopWorkingForm>()

@@ -21,8 +21,11 @@ namespace WInnovator.Models
         
         public virtual DesignShop DesignShop { get; set; }
         public virtual WorkingForm WorkingForm { get; set; }
-        public virtual DesignShop IsCurrentWorkingForm { get; set; }
-        
+#nullable enable
+        [ForeignKey("DesignShop")]
+        public virtual DesignShop? IsCurrentWorkingForm { get; set; }
+#nullable restore
+
         public virtual ICollection<ImageStore> UploadedImages { get; set; }
     }
 }

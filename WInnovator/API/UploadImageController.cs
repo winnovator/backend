@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using WInnovator.Data;
 using WInnovator.Models;
 
@@ -52,10 +52,10 @@ namespace WInnovator.API
             }
 
             // Check if the DesignShop has a current WorkingForm set
-            var currentShop = await _context.DesignShop.Include(shop => shop.CurrentWorkingForm)
+            var currentShop = await _context.DesignShop.Include(shop => shop.CurrentDesignShopWorkingForm)
                 .FirstOrDefaultAsync(shop => shop.Id == designShopId);
             
-            if (currentShop.CurrentWorkingForm == null)
+            if (currentShop.CurrentDesignShopWorkingForm == null)
             {
                 // There's no workingform set, return 404 Not Found
                 return NotFound();
@@ -69,7 +69,7 @@ namespace WInnovator.API
 
             var imageStore = new ImageStore
             {
-                DesignShopWorkingForm = currentShop.CurrentWorkingForm,
+                DesignShopWorkingForm = currentShop.CurrentDesignShopWorkingForm,
                 Mimetype = uploadedFile.ContentType,
                 UploadDateTime = DateTime.Now
             };

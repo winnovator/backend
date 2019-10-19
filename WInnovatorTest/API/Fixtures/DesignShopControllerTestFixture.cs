@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using WInnovator.API;
 using WInnovator.Models;
 using WInnovatorTest.Data;
@@ -30,7 +30,7 @@ namespace WInnovatorTest.API.Fixtures
             }
 
             // Add one we'll remember
-            _designShop = new DesignShop() {Date = DateTime.Now};
+            _designShop = new DesignShop() {Date = DateTime.Now, Description = "Remember this!"};
             _applicationTestDbContext.DesignShop.Add(_designShop);
 
             // And throw in another empty designshops

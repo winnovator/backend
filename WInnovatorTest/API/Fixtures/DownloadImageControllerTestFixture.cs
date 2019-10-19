@@ -1,7 +1,7 @@
-using System;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Text;
 using WInnovator.API;
 using WInnovator.Models;
 using WInnovatorTest.Data;

@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using WInnovator.Data;
 using WInnovator.Models;
 using WInnovator.ViewModels;
@@ -80,7 +80,7 @@ namespace WInnovator.API
 
             DesignShop shop = await _context.DesignShop
                 .Where(shop => shop.Id == designShopId)
-                .Include(shop => shop.CurrentWorkingForm)
+                .Include(shop => shop.CurrentDesignShopWorkingForm)
                 .ThenInclude(wf => wf.WorkingForm)
                 .FirstOrDefaultAsync();
 
@@ -92,7 +92,7 @@ namespace WInnovator.API
             else
             {
                 currentWorkingForm = new WorkingFormViewModel()
-                    {Id = shop.CurrentWorkingForm.Id, Description = shop.CurrentWorkingForm.WorkingForm.Description};
+                    {Id = shop.CurrentDesignShopWorkingForm.Id, Description = shop.CurrentDesignShopWorkingForm.WorkingForm.Description};
                 _logger.LogTrace(
                     $"Designshop with id {designShopId} has workingform with id {currentWorkingForm.Id} as active workingform.");
             }
