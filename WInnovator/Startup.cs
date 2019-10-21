@@ -98,10 +98,23 @@ namespace WInnovator
                     // we want to serve the Swagger UI at the app's root (http://localhost:<port>/), so the RoutePrefix property has to be set to an empty string
                     c.RoutePrefix = "swagger";
                 });
+                
+                // In development we'll accept any request from all origins
+                app.UseCors(builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                    );
             }
             else
             {
                 app.UseExceptionHandler("/Error");
+                
+                // In production, we only accept request from the same origin
+                app.UseCors(builder => builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                );
             }
 
             app.UseStaticFiles();
