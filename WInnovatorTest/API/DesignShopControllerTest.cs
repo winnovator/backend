@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using WInnovator.ViewModels;
 using WInnovatorTest.API.Fixtures;
 using Xunit;
@@ -25,7 +25,6 @@ namespace WInnovatorTest.API
         public async Task Test1_GetListOfPresentDesignShops()
         {
             // Act
-            // Task<ActionResult<IEnumerable<DesignShopViewModel>>> GetDesignShop
             var result = await _fixture._controller.GetDesignShop();
 
             // Assert
@@ -38,23 +37,25 @@ namespace WInnovatorTest.API
             Assert.True(listOfDesignShops.Count == 13);
             // Assert that we got the ID of the design shop that's made in the first test
             Assert.True(listOfDesignShops.Count(shop => shop.Id == _fixture._designShop.Id) == 1);
+            Assert.True(listOfDesignShops.Count(shop => shop.Description == _fixture._designShop.Description) == 1);
+            Assert.True(listOfDesignShops.Count(shop => shop.Date == _fixture._designShop.Date) == 1);
         }
 
         [Fact]
-        public async Task Test2_GetQrCodeForValidDesignShop()
+        public void Test2_GetQrCodeForValidDesignShop()
         {
             // Act
-            var qrcodeFirstResult = await _fixture._controller.GetQrCode(_fixture._designShop.Id);
+            var qrcodeFirstResult = _fixture._controller.GetQrCode(_fixture._designShop.Id);
 
             // Assert
             Assert.IsType<FileStreamResult>(qrcodeFirstResult);
         }
 
         [Fact]
-        public async Task Test3_GetQrCodeForInvalidDesignShop()
+        public void Test3_GetQrCodeForInvalidDesignShop()
         {
             // Act
-            var qrcodeFirstResult = await _fixture._controller.GetQrCode(new Guid());
+            var qrcodeFirstResult = _fixture._controller.GetQrCode(new Guid());
 
             // Assert
             Assert.IsType<NotFoundResult>(qrcodeFirstResult);

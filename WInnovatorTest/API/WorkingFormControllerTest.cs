@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using WInnovator.Models;
 using WInnovator.ViewModels;
 using WInnovatorTest.API.Fixtures;
 using Xunit;
@@ -21,8 +24,16 @@ namespace WInnovatorTest.API
         [Fact]
         public async Task Test1_GetListOfAllWorkingFormsWithValidGuid()
         {
+            // Setup
+            Guid designShopId = _fixture._designShop.Id;
+            List<DesignShopWorkingForm> listToCheck = await _fixture._applicationTestDbContext.DesignShopWorkingForm
+                .Where(dswf => dswf.DesignShopId == designShopId)
+                .OrderBy(dswf => dswf.Order)
+                .Include(dswf => dswf.WorkingForm)
+                .ToListAsync();
+
             // Act
-            var result = await _fixture._controller.GetListOfWorkingForms(_fixture._designShop.Id);
+            var result = await _fixture._controller.GetListOfWorkingForms(designShopId);
 
             // Assert
             // First assert: did we get an actionresult with a list
@@ -30,9 +41,34 @@ namespace WInnovatorTest.API
             // Then, get the list while checking it's a list of WorkingFormViewModels
             List<WorkingFormViewModel> theList = Assert.IsType<List<WorkingFormViewModel>>(firstResult.Value);
             // Assert that the list counts 5 items
-            Assert.True(theList.Count == 5);
-            // Assert that the id of the fourth item is equal to the current WorkingForm
-            Assert.Equal(_fixture._currentWorkingForm.Id, theList[3].Id);
+            Assert.True(theList.Count.Equals(listToCheck.Count));
+            WorkingFormViewModel wfmv;
+            DesignShopWorkingForm dswf;
+            bool currentWorkingFormFound = false;
+            for (int i = 0; i < theList.Count; i++)
+            {
+                wfmv = theList[i];
+                dswf = listToCheck[i];
+                Assert.Equal(dswf.Id, wfmv.Id);
+                Assert.Equal(dswf.WorkingForm.Description, wfmv.Description);
+                Assert.Equal(i+1, dswf.Order);
+                if (_fixture._currentWorkingForm.Id == wfmv.Id)
+                {
+                    currentWorkingFormFound = true;
+                    Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.Id, wfmv.Id);
+                    Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.WorkingForm.Description, wfmv.Description);
+                    Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.Id, dswf.Id);
+                }
+            }
+            Assert.True(currentWorkingFormFound);
+        }
+
+        [Fact]
+        public async Task Test1_CheckListWithExpectedList()
+        {
+            // Act
+            var result = await _fixture._controller.GetListOfWorkingForms(_fixture._designShop.Id);
+
         }
 
         [Fact]

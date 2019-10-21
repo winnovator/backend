@@ -5,7 +5,7 @@ namespace WInnovatorTest.Data
 {
     public class DbContextTest
     {
-        protected readonly ApplicationDbContext _applicationTestDbContext;
+        public readonly ApplicationDbContext _applicationTestDbContext;
 
         protected DbContextTest()
         {
