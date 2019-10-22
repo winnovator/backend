@@ -10,6 +10,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using WInnovator.Data;
 
 namespace WInnovator
@@ -30,10 +32,13 @@ namespace WInnovator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // TODO: UPDATE IDENTITYUSER TO OUR OWN USE
+            // See https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-3.0
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             // Add authentication via Google and Twitter
@@ -62,7 +67,15 @@ namespace WInnovator
                 //});
 
             services.AddRazorPages();
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                // using Microsoft.AspNetCore.Mvc.Authorization;
+                // using Microsoft.AspNetCore.Authorization;
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             // per https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.0&tabs=visual-studio
