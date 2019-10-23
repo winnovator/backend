@@ -65,7 +65,7 @@ namespace WInnovatorTest.API.Fixtures
                 if (i == 4)
                 {
                     _currentWorkingForm = designShopWorkingForm;
-                    _designShop.CurrentDesignShopWorkingForm = _currentWorkingForm;
+                    _currentWorkingForm.IsCurrentWorkingForm = true;
                 }
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
             }

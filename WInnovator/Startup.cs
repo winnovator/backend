@@ -7,18 +7,25 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using WInnovator.Data;
+using WInnovator.Interfaces;
+using WInnovator.Services;
 
 namespace WInnovator
 {
     [ExcludeFromCodeCoverage]
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         private readonly bool isProduction;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
@@ -26,8 +33,6 @@ namespace WInnovator
             Configuration = configuration;
             isProduction = env.IsProduction();
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -41,8 +46,25 @@ namespace WInnovator
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddTransient<IJwtTokenService, JwtTokenService>();
+
             // Add authentication via Google and Twitter
-            services.AddAuthentication();
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
 
             // We currently don't have a valid usecase for Google and/or Twitter authentication, so we're gonna disable it for this moment.
 
@@ -66,11 +88,12 @@ namespace WInnovator
 
                 //});
 
-            services.AddRazorPages();
+            services.AddRazorPages(options =>
+            {
+                options.Conventions.AllowAnonymousToFolder("/DesignShops");
+            });
             services.AddControllers(config =>
             {
-                // using Microsoft.AspNetCore.Mvc.Authorization;
-                // using Microsoft.AspNetCore.Authorization;
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
@@ -87,6 +110,31 @@ namespace WInnovator
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+                
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference 
+                            { 
+                                Type = ReferenceType.SecurityScheme, 
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+ 
+                    }
+                });            
             });
         }
 

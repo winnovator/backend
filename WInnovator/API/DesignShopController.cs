@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,7 @@ namespace WInnovator.API
         /// <returns>A list of designshops</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<DesignShopViewModel>>> GetDesignShop()
         {
             IEnumerable<DesignShop> list = await _context.DesignShop
@@ -56,6 +58,7 @@ namespace WInnovator.API
         /// <returns>An image containing the specified QrCode</returns>
         [HttpGet("{id}/qrcode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetQrCode(Guid id)
         {
@@ -81,6 +84,7 @@ namespace WInnovator.API
         [Obsolete("Endpoint will be replaced when the website supports creating a new designshop")]
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [AllowAnonymous]
         public async Task<ActionResult<DesignShop>> CreateDesignShop()
         {
             // Currently, we only need an empty DesignShop so we'll create it here.
@@ -90,9 +94,30 @@ namespace WInnovator.API
             await _context.SaveChangesAsync();
             _logger.LogTrace($"New Design Shop created with id {designShop.Id}");
 
-            return CreatedAtAction("GetDesignShop", new {id = designShop.Id}, designShop);
+            return CreatedAtAction("GetSpecificDesignShop", new {id = designShop.Id}, designShop);
         }
 
+        /// <summary>
+        /// Generates a list of designshops, starting at the current date or in the future
+        /// </summary>
+        /// <returns>A list of designshops</returns>
+        [HttpGet("specific/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [AllowAnonymous]
+        public async Task<ActionResult<DesignShopViewModel>> GetSpecificDesignShop(Guid id)
+        {
+                if (!DesignShopExists(id))
+                {
+                    return NotFound();
+                }
+
+                var designShop = await _context.DesignShop.FirstOrDefaultAsync(shop => shop.Id == id);
+
+                return new DesignShopViewModel { Id=designShop.Id, Date = designShop.Date };
+            }        
+
+        
+        
         [ExcludeFromCodeCoverage]
         private bool DesignShopExists(Guid id)
         {
