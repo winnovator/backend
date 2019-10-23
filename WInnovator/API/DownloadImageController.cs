@@ -30,6 +30,7 @@ namespace WInnovator.API
         /// <returns>The image with its original mimetype</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ImageStore>> GetImage(Guid id)
         {
