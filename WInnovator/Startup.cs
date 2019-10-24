@@ -51,8 +51,8 @@ namespace WInnovator
             // Add authentication via Google and Twitter
             services.AddAuthentication(options =>
                 {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(options =>
                 {
@@ -65,6 +65,8 @@ namespace WInnovator
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
                     };
                 });
+
+            services.AddAuthorization();
 
             // We currently don't have a valid usecase for Google and/or Twitter authentication, so we're gonna disable it for this moment.
 
@@ -88,10 +90,7 @@ namespace WInnovator
 
                 //});
 
-            services.AddRazorPages(options =>
-            {
-                options.Conventions.AllowAnonymousToFolder("/DesignShops");
-            });
+            services.AddRazorPages();
             services.AddControllers(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
