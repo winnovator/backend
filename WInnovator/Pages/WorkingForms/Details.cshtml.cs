@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WInnovator.Data;
 using WInnovator.Models;
 
-namespace WInnovator.Pages.DesignShops
+namespace WInnovator.Pages.WorkingForms
 {
     [ExcludeFromCodeCoverage]
     public class DetailsModel : PageModel
@@ -21,7 +21,7 @@ namespace WInnovator.Pages.DesignShops
             _context = context;
         }
 
-        public DesignShop DesignShop { get; set; }
+        public WorkingForm WorkingForm { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -30,9 +30,9 @@ namespace WInnovator.Pages.DesignShops
                 return NotFound();
             }
 
-            DesignShop = await _context.DesignShop.FirstOrDefaultAsync(m => m.Id == id);
+            WorkingForm = await _context.WorkingForm.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (DesignShop == null)
+            if (WorkingForm == null)
             {
                 return NotFound();
             }

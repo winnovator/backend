@@ -1,0 +1,72 @@
+﻿@page
+@model WInnovator.Pages.DesignShopsWorkingForms.IndexModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="DesignShops" class="control-label"></label>
+                @Html.DropDownListFor(x => x.CurrentDesignShop, Model.DesignShops, new { @class = "form-control", onchange = "this.form.submit();" })
+            </div>
+        </form>
+    </div>
+</div>
+    @if (Model.DesignShopWorkingForm != null)
+    {
+    <p>
+        <a asp-page="Create">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].DesignShop)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].WorkingForm)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].Order)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].IsCurrentWorkingForm)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DesignShopWorkingForm)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DesignShop.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.WorkingForm.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Order)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsCurrentWorkingForm)
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+</body>
+</html>

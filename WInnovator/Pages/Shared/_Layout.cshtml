@@ -37,11 +37,17 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                         @if (SignInManager.IsSignedIn(User))
-                        { 
+                        {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/DesignShops/Index">DesignShops</a>
                             </li>
-                         }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/WorkingForms/Index">Werkvormen</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/DesignShopsWorkingForms/Index">Werkvormen per DesignShop</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

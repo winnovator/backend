@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WInnovator.Data;
 using WInnovator.Models;
 
-namespace WInnovator.Pages.DesignShops
+namespace WInnovator.Pages.WorkingForms
 {
     [ExcludeFromCodeCoverage]
     public class DeleteModel : PageModel
@@ -22,7 +22,7 @@ namespace WInnovator.Pages.DesignShops
         }
 
         [BindProperty]
-        public DesignShop DesignShop { get; set; }
+        public WorkingForm WorkingForm { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -31,9 +31,9 @@ namespace WInnovator.Pages.DesignShops
                 return NotFound();
             }
 
-            DesignShop = await _context.DesignShop.FirstOrDefaultAsync(m => m.Id == id);
+            WorkingForm = await _context.WorkingForm.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (DesignShop == null)
+            if (WorkingForm == null)
             {
                 return NotFound();
             }
@@ -47,11 +47,11 @@ namespace WInnovator.Pages.DesignShops
                 return NotFound();
             }
 
-            DesignShop = await _context.DesignShop.FindAsync(id);
+            WorkingForm = await _context.WorkingForm.FindAsync(id);
 
-            if (DesignShop != null)
+            if (WorkingForm != null)
             {
-                _context.DesignShop.Remove(DesignShop);
+                _context.WorkingForm.Remove(WorkingForm);
                 await _context.SaveChangesAsync();
             }
 

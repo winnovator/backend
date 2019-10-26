@@ -10,6 +10,7 @@ namespace WInnovator.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
+        [Required]
         public string Description { get; set; }
         [Column(TypeName = "datetime2")]
         [DataType(DataType.Date)]

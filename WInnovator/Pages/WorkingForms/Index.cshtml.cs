@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WInnovator.Data;
 using WInnovator.Models;
 
-namespace WInnovator.Pages.DesignShops
+namespace WInnovator.Pages.WorkingForms
 {
     [ExcludeFromCodeCoverage]
     public class IndexModel : PageModel
@@ -22,11 +21,11 @@ namespace WInnovator.Pages.DesignShops
             _context = context;
         }
 
-        public IList<DesignShop> DesignShop { get;set; }
+        public IList<WorkingForm> WorkingForm { get;set; }
 
         public async Task OnGetAsync()
         {
-            DesignShop = await _context.DesignShop.ToListAsync();
+            WorkingForm = await _context.WorkingForm.ToListAsync();
         }
     }
 }

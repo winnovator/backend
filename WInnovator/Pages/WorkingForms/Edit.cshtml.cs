@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using WInnovator.Data;
 using WInnovator.Models;
 
-namespace WInnovator.Pages.DesignShops
+namespace WInnovator.Pages.WorkingForms
 {
     [ExcludeFromCodeCoverage]
     public class EditModel : PageModel
@@ -23,7 +23,7 @@ namespace WInnovator.Pages.DesignShops
         }
 
         [BindProperty]
-        public DesignShop DesignShop { get; set; }
+        public WorkingForm WorkingForm { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -32,9 +32,9 @@ namespace WInnovator.Pages.DesignShops
                 return NotFound();
             }
 
-            DesignShop = await _context.DesignShop.FirstOrDefaultAsync(m => m.Id == id);
+            WorkingForm = await _context.WorkingForm.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (DesignShop == null)
+            if (WorkingForm == null)
             {
                 return NotFound();
             }
@@ -50,7 +50,7 @@ namespace WInnovator.Pages.DesignShops
                 return Page();
             }
 
-            _context.Attach(DesignShop).State = EntityState.Modified;
+            _context.Attach(WorkingForm).State = EntityState.Modified;
 
             try
             {
@@ -58,7 +58,7 @@ namespace WInnovator.Pages.DesignShops
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DesignShopExists(DesignShop.Id))
+                if (!WorkingFormExists(WorkingForm.Id))
                 {
                     return NotFound();
                 }
@@ -71,9 +71,9 @@ namespace WInnovator.Pages.DesignShops
             return RedirectToPage("./Index");
         }
 
-        private bool DesignShopExists(Guid id)
+        private bool WorkingFormExists(Guid id)
         {
-            return _context.DesignShop.Any(e => e.Id == id);
+            return _context.WorkingForm.Any(e => e.Id == id);
         }
     }
 }

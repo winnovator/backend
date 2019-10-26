@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using WInnovator.Data;
 using WInnovator.Models;
 
-namespace WInnovator.Pages.DesignShops
+namespace WInnovator.Pages.WorkingForms
 {
     [ExcludeFromCodeCoverage]
     public class CreateModel : PageModel
@@ -27,7 +27,7 @@ namespace WInnovator.Pages.DesignShops
         }
 
         [BindProperty]
-        public DesignShop DesignShop { get; set; }
+        public WorkingForm WorkingForm { get; set; }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -38,7 +38,7 @@ namespace WInnovator.Pages.DesignShops
                 return Page();
             }
 
-            _context.DesignShop.Add(DesignShop);
+            _context.WorkingForm.Add(WorkingForm);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
