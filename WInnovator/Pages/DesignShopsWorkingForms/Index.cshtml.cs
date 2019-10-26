@@ -32,7 +32,10 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         {
             LoadDesignShops();
             DesignShop first = listOfDesignShop.First();
-            await GetWorkingForms(first.Id);
+            if(first != null)
+            { 
+                await GetWorkingForms(first.Id);
+            }
 
             DesignShops = new SelectList(_context.DesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
         }
