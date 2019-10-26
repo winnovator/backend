@@ -31,7 +31,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         public async Task OnGetAsync()
         {
             LoadDesignShops();
-            DesignShop first = listOfDesignShop.First();
+            DesignShop first = listOfDesignShop.FirstOrDefault();
             if(first != null)
             { 
                 await GetWorkingForms(first.Id);
