@@ -77,50 +77,6 @@ namespace WInnovator.API
             return File(outputStream, "image/jpeg");
         }
 
-        // TODO! This has to be removed!!
-        /// <summary>
-        /// Temporary endpoint for creating a designshop, will be removed!!
-        /// </summary>
-        /// <returns></returns>
-        [ExcludeFromCodeCoverage]
-        [Obsolete("Endpoint will be replaced when the website supports creating a new designshop")]
-        [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [AllowAnonymous]
-        public async Task<ActionResult<DesignShop>> CreateDesignShop()
-        {
-            // Currently, we only need an empty DesignShop so we'll create it here.
-            _logger.LogTrace("Creating new Design Shop.");
-            DesignShop designShop = new DesignShop();
-            _context.DesignShop.Add(designShop);
-            await _context.SaveChangesAsync();
-            _logger.LogTrace($"New Design Shop created with id {designShop.Id}");
-
-            return CreatedAtAction("GetSpecificDesignShop", new {id = designShop.Id}, designShop);
-        }
-
-        /// <summary>
-        /// Generates a list of designshops, starting at the current date or in the future
-        /// </summary>
-        /// <returns>A list of designshops</returns>
-        [HttpGet("specific/{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [AllowAnonymous]
-        public async Task<ActionResult<DesignShopViewModel>> GetSpecificDesignShop(Guid id)
-        {
-                if (!DesignShopExists(id))
-                {
-                    return NotFound();
-                }
-
-                var designShop = await _context.DesignShop.FirstOrDefaultAsync(shop => shop.Id == id);
-
-                return new DesignShopViewModel { Id=designShop.Id, Date = designShop.Date };
-            }        
-
-        
-        
-        [ExcludeFromCodeCoverage]
         private bool DesignShopExists(Guid id)
         {
             return _context.DesignShop.Any(e => e.Id == id);
