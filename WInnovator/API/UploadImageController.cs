@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,6 +15,7 @@ using WInnovator.Models;
 
 namespace WInnovator.API
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class UploadImageController : ControllerBase
@@ -43,6 +46,7 @@ namespace WInnovator.API
         [HttpPost("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ImageStore>> PostUploadImageStore(Guid designShopId, [FromForm] IFormFile uploadedFile)
         {
@@ -52,10 +56,12 @@ namespace WInnovator.API
             }
 
             // Check if the DesignShop has a current WorkingForm set
-            var currentShop = await _context.DesignShop.Include(shop => shop.CurrentDesignShopWorkingForm)
-                .FirstOrDefaultAsync(shop => shop.Id == designShopId);
+            var dswf = await _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId==designShopId && dswf.IsCurrentWorkingForm == true).FirstOrDefaultAsync();
+
+            //var currentShop = await _context.DesignShop.Include(shop => shop.DesignShopWorkingForms.Where(dswf => dswf.IsCurrentWorkingForm==true))
+            //    .FirstOrDefaultAsync(shop => shop.Id == designShopId);
             
-            if (currentShop.CurrentDesignShopWorkingForm == null)
+            if (dswf == null)
             {
                 // There's no workingform set, return 404 Not Found
                 return NotFound();
@@ -69,7 +75,7 @@ namespace WInnovator.API
 
             var imageStore = new ImageStore
             {
-                DesignShopWorkingForm = currentShop.CurrentDesignShopWorkingForm,
+                DesignShopWorkingForm = dswf,
                 Mimetype = uploadedFile.ContentType,
                 UploadDateTime = DateTime.Now
             };

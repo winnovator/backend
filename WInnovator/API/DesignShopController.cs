@@ -6,6 +6,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ using WInnovator.ViewModels;
 
 namespace WInnovator.API
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class DesignShopController : ControllerBase
@@ -38,6 +41,7 @@ namespace WInnovator.API
         /// <returns>A list of designshops</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<IEnumerable<DesignShopViewModel>>> GetDesignShop()
         {
             IEnumerable<DesignShop> list = await _context.DesignShop
@@ -56,6 +60,7 @@ namespace WInnovator.API
         /// <returns>An image containing the specified QrCode</returns>
         [HttpGet("{id}/qrcode")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetQrCode(Guid id)
         {
@@ -72,28 +77,6 @@ namespace WInnovator.API
             return File(outputStream, "image/jpeg");
         }
 
-        // TODO! This has to be removed!!
-        /// <summary>
-        /// Temporary endpoint for creating a designshop, will be removed!!
-        /// </summary>
-        /// <returns></returns>
-        [ExcludeFromCodeCoverage]
-        [Obsolete("Endpoint will be replaced when the website supports creating a new designshop")]
-        [HttpPost("create")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<DesignShop>> CreateDesignShop()
-        {
-            // Currently, we only need an empty DesignShop so we'll create it here.
-            _logger.LogTrace("Creating new Design Shop.");
-            DesignShop designShop = new DesignShop();
-            _context.DesignShop.Add(designShop);
-            await _context.SaveChangesAsync();
-            _logger.LogTrace($"New Design Shop created with id {designShop.Id}");
-
-            return CreatedAtAction("GetDesignShop", new {id = designShop.Id}, designShop);
-        }
-
-        [ExcludeFromCodeCoverage]
         private bool DesignShopExists(Guid id)
         {
             return _context.DesignShop.Any(e => e.Id == id);

@@ -11,20 +11,14 @@ namespace WInnovator.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required]
-        [ForeignKey("DesignShop")]
         public Guid DesignShopId { get; set; }
+        public virtual DesignShop DesignShop { get; set; }
         [Required]
-        [ForeignKey("WorkingForm")]
         public Guid WorkingFormId { get; set; }
+        public virtual WorkingForm WorkingForm { get; set; }
         [Required]
         public int Order { get; set; }
-        
-        public virtual DesignShop DesignShop { get; set; }
-        public virtual WorkingForm WorkingForm { get; set; }
-#nullable enable
-        [ForeignKey("DesignShop")]
-        public virtual DesignShop? IsCurrentWorkingForm { get; set; }
-#nullable restore
+        public bool IsCurrentWorkingForm { get; set; }
 
         public virtual ICollection<ImageStore> UploadedImages { get; set; }
     }

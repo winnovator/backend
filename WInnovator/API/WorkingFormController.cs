@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using WInnovator.ViewModels;
 
 namespace WInnovator.API
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkingFormController : ControllerBase
@@ -34,6 +37,7 @@ namespace WInnovator.API
         /// <returns>A list of WorkingFormViewModels</returns>
         [HttpGet("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<WorkingFormViewModel>>> GetListOfWorkingForms(Guid designShopId)
         {
@@ -66,6 +70,7 @@ namespace WInnovator.API
         /// <returns>WorkingFormModelView of the current workingform</returns>
         [HttpGet("{designShopId}/current")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WorkingFormViewModel>> GetCurrentWorkingFormOfDesignShop(Guid designShopId)
         {
@@ -78,21 +83,20 @@ namespace WInnovator.API
 
             _logger.LogTrace($"Searching current workingform for designshop id {designShopId}.");
 
-            DesignShop shop = await _context.DesignShop
-                .Where(shop => shop.Id == designShopId)
-                .Include(shop => shop.CurrentDesignShopWorkingForm)
-                .ThenInclude(wf => wf.WorkingForm)
+            DesignShopWorkingForm dswf = await _context.DesignShopWorkingForm
+                .Where(dswf => dswf.DesignShopId == designShopId && dswf.IsCurrentWorkingForm == true)
+                .Include(dswf => dswf.WorkingForm)
                 .FirstOrDefaultAsync();
 
             var currentWorkingForm = new WorkingFormViewModel();
-            if (shop == null)
+            if (dswf == null)
             {
                 _logger.LogTrace($"Designshop with id {designShopId} doesn't have a current workingform.'");
             }
             else
             {
                 currentWorkingForm = new WorkingFormViewModel()
-                    {Id = shop.CurrentDesignShopWorkingForm.Id, Description = shop.CurrentDesignShopWorkingForm.WorkingForm.Description};
+                    {Id = dswf.Id, Description = dswf.WorkingForm.Description};
                 _logger.LogTrace(
                     $"Designshop with id {designShopId} has workingform with id {currentWorkingForm.Id} as active workingform.");
             }
@@ -107,6 +111,7 @@ namespace WInnovator.API
         /// <returns>A list of DownloadImageViewModels</returns>
         [HttpGet("{workingFormId}/imageList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid dswfId)
         {
