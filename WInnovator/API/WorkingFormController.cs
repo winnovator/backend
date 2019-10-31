@@ -107,32 +107,32 @@ namespace WInnovator.API
         /// <summary>
         /// Returns a list of all images belonging to the specified DesignShopWorkingForm
         /// </summary>
-        /// <param name="dswfId">guid of the specified DesignShopWorkingForm</param>
+        /// <param name="workingFormId">guid of the specified DesignShopWorkingForm</param>
         /// <returns>A list of DownloadImageViewModels</returns>
         [HttpGet("{workingFormId}/imageList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid dswfId)
+        public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid workingFormId)
         {
             // Check if the DesignShopWorkingForm exists
-            if (!DesignShopWorkingFormExists(dswfId))
+            if (!DesignShopWorkingFormExists(workingFormId))
             {
-                _logger.LogError($"Unknown DesignShopWorkingForm, asked for id {dswfId}");
+                _logger.LogError($"Unknown DesignShopWorkingForm, asked for id {workingFormId}");
                 return NotFound();
             }
 
-            _logger.LogTrace($"Searching for images belonging to DesignShopWorkingForm with id {dswfId}.");
+            _logger.LogTrace($"Searching for images belonging to DesignShopWorkingForm with id {workingFormId}.");
 
             DesignShopWorkingForm designShopWorkingForm = await _context.DesignShopWorkingForm
-                .Where(dswf => dswf.Id == dswfId)
+                .Where(dswf => dswf.Id == workingFormId)
                 .Include(dswf => dswf.UploadedImages)
                 .FirstOrDefaultAsync();
 
             var listOfImages = designShopWorkingForm.UploadedImages.Select(image => new DownloadImageViewModel()
                 {Id = image.Id, DateTime = image.UploadDateTime}).ToList();
 
-            _logger.LogTrace($"Found {listOfImages.Count} images for DesignShopWorkingForm with id {dswfId}");
+            _logger.LogTrace($"Found {listOfImages.Count} images for DesignShopWorkingForm with id {workingFormId}");
             return listOfImages;
         }
 

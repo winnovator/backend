@@ -48,7 +48,8 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ImageStore>> PostUploadImageStore(Guid designShopId, [FromForm] IFormFile uploadedFile)
+//        public async Task<ActionResult<ImageStore>> PostUploadImageStore(Guid designShopId, [FromForm] IFormFile uploadedFile)
+        public async Task<ActionResult<ImageStore>> PostUploadImageStore(Guid designShopId, IFormFile uploadedFile)
         {
             if (uploadedFile == null)
             {
