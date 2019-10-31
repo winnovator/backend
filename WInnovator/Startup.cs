@@ -138,6 +138,10 @@ namespace WInnovator
                     }
                 });            
             });
+
+            // See https://medium.com/it-dead-inside/implementing-health-checks-for-asp-net-core-a-deep-dive-85a327be9a75 for adding additional checks
+            services.AddHealthChecks()
+                .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
