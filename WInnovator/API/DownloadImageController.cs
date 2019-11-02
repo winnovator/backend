@@ -35,7 +35,6 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [AllowAnonymous]
         public async Task<ActionResult<ImageStore>> GetImage(Guid id)
         {
             _logger.LogTrace($"Searching for image with id {id}");

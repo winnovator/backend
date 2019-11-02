@@ -140,6 +140,7 @@ namespace WInnovator
             });
 
             // See https://medium.com/it-dead-inside/implementing-health-checks-for-asp-net-core-a-deep-dive-85a327be9a75 for adding additional checks
+            // https://github.com/xabaril/AspNetCore.Diagnostics.HealthChecks
             services.AddHealthChecks()
                 .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
@@ -179,6 +180,7 @@ namespace WInnovator
                 
                 // In production, we only accept request from the same origin
                 app.UseCors(builder => builder
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                 );
