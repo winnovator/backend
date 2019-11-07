@@ -27,8 +27,9 @@ namespace WInnovatorTest.API
             // First assert: did we get an actionresult with an ImageStore
             var firstResult = Assert.IsType<ActionResult<ImageStore>>(result);
             // Second assert, is there a file content result
-            var secondResult = Assert.IsType<FileContentResult>(result.Result);
-            Assert.Equal("application/test", secondResult.ContentType);
+            var secondResult = Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(200, secondResult.StatusCode);
+            Assert.Equal(Convert.ToBase64String(_fixture._imageStore.Image), secondResult.Value);
         }
 
         [Fact]

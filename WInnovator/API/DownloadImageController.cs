@@ -47,7 +47,7 @@ namespace WInnovator.API
             }
 
             _logger.LogTrace($"Returning image with id {id}");
-            return File(image.Image, image.Mimetype);
+            return Ok(Convert.ToBase64String(image.Image));
         }
     }
 }
