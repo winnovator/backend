@@ -15,7 +15,7 @@ using WInnovator.ViewModels;
 
 namespace WInnovator.API
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkingFormController : ControllerBase
@@ -38,6 +38,7 @@ namespace WInnovator.API
         [HttpGet("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<WorkingFormViewModel>>> GetListOfWorkingForms(Guid designShopId)
         {
@@ -71,6 +72,7 @@ namespace WInnovator.API
         [HttpGet("{designShopId}/current")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<WorkingFormViewModel>> GetCurrentWorkingFormOfDesignShop(Guid designShopId)
         {
@@ -112,6 +114,7 @@ namespace WInnovator.API
         [HttpGet("{workingFormId}/imageList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid workingFormId)
         {

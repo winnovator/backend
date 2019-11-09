@@ -1,24 +1,22 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 using WInnovator.Data;
-using WInnovator.Interfaces;
-using WInnovator.Services;
 
 namespace WInnovator
 {
@@ -48,8 +46,6 @@ namespace WInnovator
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
 
             // Add authentication via Google and Twitter
             services.AddAuthentication(options =>
@@ -146,7 +142,7 @@ namespace WInnovator
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (!isProduction)
             {
@@ -199,6 +195,126 @@ namespace WInnovator
                 endpoints.MapRazorPages();
                 endpoints.MapHealthChecks("/health");
             });
+
+            CreateRoles(serviceProvider).Wait();
+            createUsersIfNonexisting(serviceProvider).Wait();
+            addRolesToDefaultUsers(serviceProvider).Wait();
         }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+
+            IdentityResult identityResult;
+            foreach (string roleName in getRoles())
+            {
+                var roleExists = await _roleManager.RoleExistsAsync(roleName);
+                if (!roleExists)
+                {
+                    identityResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                    if(!identityResult.Succeeded)
+                    {
+                        _logger.LogError($"Error creating role { roleName }: { identityResult.Errors.ToString() }");
+                    }
+                }
+            }
+
+        }
+
+        private async Task createUsersIfNonexisting(IServiceProvider serviceProvider)
+        {
+            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+
+            IdentityResult identityResult;
+            IdentityUser user;
+
+            foreach (UserData userData in getDefaultUsers())
+            {
+                // Does the user exist?
+                user = await _userManager.FindByEmailAsync(userData.email);
+                if (user == null)
+                {
+                    // No, create it!
+                    user = new IdentityUser() { UserName = userData.email, Email = userData.email, EmailConfirmed = true };
+                    identityResult = await _userManager.CreateAsync(user, userData.password);
+                    _logger.LogError($"Error creating user { user.UserName }: { identityResult.Errors.ToString() }");
+                }
+            }
+        }
+
+        private async Task addRolesToDefaultUsers(IServiceProvider serviceProvider)
+        {
+            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+
+            IdentityResult identityResult;
+            IdentityUser user;
+
+            foreach (UserData userData in getDefaultUsers())
+            {
+                // Does the user exist?
+                user = await _userManager.FindByEmailAsync(userData.email);
+                if (user != null)
+                {
+                    foreach (string roleName in userData.defaultRoles)
+                    {
+                        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+                        if (!roleExists)
+                        {
+                            _logger.LogError($"Non-existing role { roleName } defined for user { userData.email } ");
+                        }
+                        else
+                        {
+                            if (!(await _userManager.IsInRoleAsync(user, roleName)))
+                            {
+                                identityResult = await _userManager.AddToRoleAsync(user, roleName);
+                                if (!identityResult.Succeeded)
+                                {
+                                    _logger.LogError($"Error adding role { roleName } to user { userData.email }: { identityResult.Errors.ToString() }");
+                                }
+                            }
+                        }
+                    }
+                } else
+                {
+                    // No, create error in log!
+                    _logger.LogError($"Error, user { userData.email } doesn't exist!");
+                }
+            }
+        }
+
+        private string[] getRoles()
+        {
+            return new string[] {
+                "Administrator",
+                "Facilitator",
+                "Gebruiker"
+            };
+        }
+
+        private UserData[] getDefaultUsers()
+        {
+            return new UserData[]
+            {
+                new UserData() { email="winnovator@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+                new UserData() { email="maarten.groensmit@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+                new UserData() { email="marc.hoeve@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+                new UserData() { email="niek.pruntel@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+                new UserData() { email="gert.stoevelaar@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+            };
+        }
+
+        private class UserData
+        {
+            public string email { get; set; }
+            public string password { get; set; }
+            public string[] defaultRoles { get; set; }
+        }
+
     }
 }

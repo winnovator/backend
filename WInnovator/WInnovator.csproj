@@ -62,8 +62,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Remove="Resources\WInnovator logo.png" />
     <None Remove="Resources\WInnovator wit.png" />
+    <EmbeddedResource Include="Resources\WInnovator logo.png" />
     <EmbeddedResource Include="Resources\WInnovator wit.png" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
   <!--

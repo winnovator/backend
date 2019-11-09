@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WInnovator.Data;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShopsWorkingForms
 {
     [ExcludeFromCodeCoverage]
+    [Authorize(Roles = "Administrator,Facilitator")]
     public class CreateModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using WInnovator.Data;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
+    [Authorize(Roles = "Administrator,Facilitator")]
     public class EditModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;
