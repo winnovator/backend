@@ -17,6 +17,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WInnovator.Data;
+using WInnovator.Helper;
+using WInnovator.Interfaces;
 
 namespace WInnovator
 {
@@ -46,6 +48,8 @@ namespace WInnovator
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddTransient<IUserIdentityHelper, UserIdentityHelper>();
 
             // Add authentication via Google and Twitter
             services.AddAuthentication(options =>
@@ -142,7 +146,7 @@ namespace WInnovator
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
         {
             if (!isProduction)
             {
@@ -196,125 +200,46 @@ namespace WInnovator
                 endpoints.MapHealthChecks("/health");
             });
 
-            CreateRoles(serviceProvider).Wait();
-            createUsersIfNonexisting(serviceProvider).Wait();
-            addRolesToDefaultUsers(serviceProvider).Wait();
+            CreateRoles(userIdentityHelper).Wait();
+            createUsersIfNonexisting(userIdentityHelper).Wait();
+            addRolesToDefaultUsers(serviceProvider, userIdentityHelper).Wait();
         }
 
-        private async Task CreateRoles(IServiceProvider serviceProvider)
+        private async Task CreateRoles(IUserIdentityHelper userIdentityHelper)
         {
-            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-
-            IdentityResult identityResult;
-            foreach (string roleName in getRoles())
+            foreach (string roleName in DefaultUsersAndRoles.getRoles())
             {
-                var roleExists = await _roleManager.RoleExistsAsync(roleName);
-                if (!roleExists)
-                {
-                    identityResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
-                    if(!identityResult.Succeeded)
-                    {
-                        _logger.LogError($"Error creating role { roleName }: { identityResult.Errors.ToString() }");
-                    }
-                }
-            }
-
-        }
-
-        private async Task createUsersIfNonexisting(IServiceProvider serviceProvider)
-        {
-            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-
-            IdentityResult identityResult;
-            IdentityUser user;
-
-            foreach (UserData userData in getDefaultUsers())
-            {
-                // Does the user exist?
-                user = await _userManager.FindByEmailAsync(userData.email);
-                if (user == null)
-                {
-                    // No, create it!
-                    user = new IdentityUser() { UserName = userData.email, Email = userData.email, EmailConfirmed = true };
-                    identityResult = await _userManager.CreateAsync(user, userData.password);
-                    _logger.LogError($"Error creating user { user.UserName }: { identityResult.Errors.ToString() }");
-                }
+                await userIdentityHelper.CreateRoleIfNonExistent(roleName);
             }
         }
 
-        private async Task addRolesToDefaultUsers(IServiceProvider serviceProvider)
+        private async Task createUsersIfNonexisting(IUserIdentityHelper userIdentityHelper)
         {
-            var _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-            var _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
+            {
+                await userIdentityHelper.CreateConfirmedUserIfNonExistent(userData.email, userData.password);
+            }
+        }
+
+        private async Task addRolesToDefaultUsers(IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
+        {
             var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
-            IdentityResult identityResult;
-            IdentityUser user;
-
-            foreach (UserData userData in getDefaultUsers())
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
             {
                 // Does the user exist?
-                user = await _userManager.FindByEmailAsync(userData.email);
-                if (user != null)
+                if((await userIdentityHelper.SearchUser(userData.email)).Exists())
                 {
                     foreach (string roleName in userData.defaultRoles)
                     {
-                        var roleExists = await _roleManager.RoleExistsAsync(roleName);
-                        if (!roleExists)
-                        {
-                            _logger.LogError($"Non-existing role { roleName } defined for user { userData.email } ");
-                        }
-                        else
-                        {
-                            if (!(await _userManager.IsInRoleAsync(user, roleName)))
-                            {
-                                identityResult = await _userManager.AddToRoleAsync(user, roleName);
-                                if (!identityResult.Succeeded)
-                                {
-                                    _logger.LogError($"Error adding role { roleName } to user { userData.email }: { identityResult.Errors.ToString() }");
-                                }
-                            }
-                        }
+                        await userIdentityHelper.AddRoleToUser(userData.email, roleName);
                     }
                 } else
                 {
                     // No, create error in log!
-                    _logger.LogError($"Error, user { userData.email } doesn't exist!");
+                    _logger.LogError($"Error, cannot add roles to user { userData.email }, user doesn't exist!");
                 }
             }
         }
-
-        private string[] getRoles()
-        {
-            return new string[] {
-                "Administrator",
-                "Facilitator",
-                "Gebruiker"
-            };
-        }
-
-        private UserData[] getDefaultUsers()
-        {
-            return new UserData[]
-            {
-                new UserData() { email="winnovator@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
-                new UserData() { email="maarten.groensmit@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
-                new UserData() { email="marc.hoeve@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
-                new UserData() { email="niek.pruntel@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
-                new UserData() { email="gert.stoevelaar@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
-            };
-        }
-
-        private class UserData
-        {
-            public string email { get; set; }
-            public string password { get; set; }
-            public string[] defaultRoles { get; set; }
-        }
-
     }
 }
