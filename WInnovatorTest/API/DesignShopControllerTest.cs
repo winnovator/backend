@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WInnovator.ViewModels;
 using WInnovatorTest.API.Fixtures;
 using Xunit;
@@ -30,11 +30,11 @@ namespace WInnovatorTest.API
             // Assert
             // Peel off seperate layers and test if they're the correct type
             // We should have a IEnumerable with 1 item
-            var firstResult = Assert.IsType<ActionResult<IEnumerable<DesignShopViewModel>>>(result);
+            var firstResult = Assert.IsType<ActionResult<List<DesignShopViewModel>>>(result);
             List<DesignShopViewModel> listOfDesignShops = Assert.IsType<List<DesignShopViewModel>>(firstResult.Value);
 
-            // Assert that we've got one (1) item
-            Assert.True(listOfDesignShops.Count == 13);
+            // Assert that we've got 3 items
+            Assert.True(listOfDesignShops.Count == 3);
             // Assert that we got the ID of the design shop that's made in the first test
             Assert.True(listOfDesignShops.Count(shop => shop.Id == _fixture._designShop.Id) == 1);
             Assert.True(listOfDesignShops.Count(shop => shop.Description == _fixture._designShop.Description) == 1);
@@ -55,10 +55,38 @@ namespace WInnovatorTest.API
         public void Test3_GetQrCodeForInvalidDesignShop()
         {
             // Act
-            var qrcodeFirstResult = _fixture._controller.GetQrCode(new Guid());
+            var qrcodeFirstResult = _fixture._controller.GetQrCode(Guid.NewGuid());
 
             // Assert
             Assert.IsType<NotFoundResult>(qrcodeFirstResult);
+        }
+
+        [Fact]
+        public async Task Test4_GetAppTokenWithValidDesignShopId()
+        {
+            // Act
+            var result = await _fixture._controller.GetAppToken(_fixture._designShop.Id);
+            
+            // Asserts
+            var firstResult = Assert.IsType<ActionResult<AppTokenModel>>(result);
+            var secondResult = Assert.IsType<OkObjectResult>(firstResult.Result);
+            var finalResult = secondResult.Value;
+            Assert.IsType<AppTokenModel>(finalResult);
+            AppTokenModel appTokenModel = (AppTokenModel) finalResult;
+            Assert.True(appTokenModel.ShopId.Equals(_fixture._designShop.Id));
+            Assert.True(appTokenModel.ShopDescription.Equals(_fixture._designShop.Description));
+            Assert.True(appTokenModel.Token.Equals(_fixture._designShop.AppUseraccount));
+        }
+
+        [Fact]
+        public async Task Test5_GetAppTokenWithInvalidDesignShopId()
+        {
+            // Act
+            var result = await _fixture._controller.GetAppToken(Guid.NewGuid());
+            
+            // Asserts
+            var firstResult = Assert.IsType<ActionResult<AppTokenModel>>(result);
+            var secondResult = Assert.IsType<NotFoundResult>(firstResult.Result);
         }
     }
 }
