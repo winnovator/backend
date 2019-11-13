@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using WInnovator.Models;
 using WInnovatorTest.API.Fixtures;
 using WInnovatorTest.TestHelper;
@@ -72,5 +72,20 @@ namespace WInnovatorTest.API
             // Second assert, is the file accepted
             Assert.IsType<BadRequestResult>(result.Result);
         }
+        
+        [Fact]
+        public async Task Test5_UploadToDesignShopWithoutValidFile()
+        {
+            // Act
+            var result = await _fixture._controller.PostUploadImageStore(
+                _fixture._designShopWithoutCurrentWorkingForm.Id, null);
+
+            // Assert
+            // First assert: did we get an actionresult with an ImageStore
+            var firstResult = Assert.IsType<ActionResult<ImageStore>>(result);
+            // Second assert, is the file accepted
+            Assert.IsType<BadRequestResult>(result.Result);
+        }
+
     }
 }
