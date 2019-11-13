@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using WInnovator.API;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 using WInnovatorTest.Data;
 
@@ -10,6 +11,7 @@ namespace WInnovatorTest.API.Fixtures
     public class DesignShopControllerTestFixture : DbContextTest
     {
         public ILogger<DesignShopController> _logger;
+        public IUserIdentityHelper _userIdentityHelper;
         public DesignShopController _controller;
         public DesignShop _designShop;
 
@@ -17,7 +19,9 @@ namespace WInnovatorTest.API.Fixtures
         {
             // Arrange
             _logger = Mock.Of<ILogger<DesignShopController>>();
-            _controller = new DesignShopController(_applicationTestDbContext, _logger);
+            _userIdentityHelper = Mock.Of<IUserIdentityHelper> ();
+
+            _controller = new DesignShopController(_applicationTestDbContext, _logger, _userIdentityHelper);
             MockDesignShops();
         }
 
