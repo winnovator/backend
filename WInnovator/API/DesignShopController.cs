@@ -20,7 +20,7 @@ using WInnovator.ViewModels;
 
 namespace WInnovator.API
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
     [Route("api/[controller]")]
     [ApiController]
     public class DesignShopController : ControllerBase
@@ -59,7 +59,6 @@ namespace WInnovator.API
         /// </summary>
         /// <returns>An image containing the specified QrCode</returns>
         [HttpGet("{id}/qrcode")]
-        [Authorize(Roles = "Administrator,Facilitator")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

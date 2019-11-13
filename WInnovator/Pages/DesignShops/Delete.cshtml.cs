@@ -12,15 +12,10 @@ namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
     [Authorize(Roles = "Administrator,Facilitator")]
-    public class DeleteModel : PageModel
+    public class DeleteModel : PageModelWithAppUserMethods
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
-        private readonly IUserIdentityHelper _userIdentityHelper;
-
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
+        public DeleteModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
-            _context = context;
-            _userIdentityHelper = userIdentityHelper;
         }
 
         [BindProperty]
@@ -60,15 +55,6 @@ namespace WInnovator.Pages.DesignShops
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private async Task RemoveAppUseraccountIfExisting(string username)
-        {
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                await _userIdentityHelper.RemoveAllRolesFromUser(DesignShop.AppUseraccount);
-                await _userIdentityHelper.RemoveAppUser(DesignShop.AppUseraccount);
-            }
         }
     }
 }

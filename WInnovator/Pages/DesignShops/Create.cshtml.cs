@@ -12,15 +12,10 @@ namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
     [Authorize(Roles = "Administrator,Facilitator")]
-    public class CreateModel : PageModel
+    public class CreateModel : PageModelWithAppUserMethods
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
-        private readonly IUserIdentityHelper _userIdentityHelper;
-
-        public CreateModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
+        public CreateModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
-            _context = context;
-            _userIdentityHelper = userIdentityHelper;
         }
 
         public IActionResult OnGet()
@@ -55,22 +50,5 @@ namespace WInnovator.Pages.DesignShops
             return RedirectToPage("./Index");
         }
 
-        private async Task<string> CreateUserForDesignShop()
-        {
-            string userName = _userIdentityHelper.ConstructAppUsername();
-            await _userIdentityHelper.CreateConfirmedUserIfNonExistent(userName, "");
-            if(!(await _userIdentityHelper.SearchUser(userName)).Exists())
-            {
-                ModelState.AddModelError("User", "Useraccount cannot be created");
-                return "";
-            }
-            await _userIdentityHelper.AddRoleToUser(userName, "FrontendApp");
-            if(!await _userIdentityHelper.UserHasRole(userName, "FrontendApp"))
-            {
-                ModelState.AddModelError("Role", "Role cannot be added to the account");
-                return "";
-            }
-            return userName;
-        }
     }
 }

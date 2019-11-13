@@ -1,24 +1,21 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
     [Authorize(Roles = "Administrator,Facilitator")]
-    public class EditModel : PageModel
+    public class EditModel : PageModelWithAppUserMethods
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
-
-        public EditModel(WInnovator.Data.ApplicationDbContext context)
+        public EditModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -53,6 +50,16 @@ namespace WInnovator.Pages.DesignShops
 
             try
             {
+                if(string.IsNullOrWhiteSpace(DesignShop.AppUseraccount))
+                {
+                    string createdUser = await CreateUserForDesignShop();
+                    if(!ModelState.IsValid)
+                    {
+                        return Page();
+                    }
+                    DesignShop.AppUseraccount = createdUser;
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

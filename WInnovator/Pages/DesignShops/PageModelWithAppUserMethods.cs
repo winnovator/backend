@@ -1,0 +1,48 @@
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WInnovator.Interfaces;
+
+namespace WInnovator.Pages.DesignShops
+{
+    public class PageModelWithAppUserMethods : PageModel
+    {
+        protected readonly WInnovator.Data.ApplicationDbContext _context;
+        protected readonly IUserIdentityHelper _userIdentityHelper;
+
+        public PageModelWithAppUserMethods(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
+        {
+            _context = context;
+            _userIdentityHelper = userIdentityHelper;
+        }
+
+        protected async Task<string> CreateUserForDesignShop()
+        {
+            string userName = _userIdentityHelper.ConstructAppUsername();
+            await _userIdentityHelper.CreateConfirmedUserIfNonExistent(userName, "");
+            if (!(await _userIdentityHelper.SearchUser(userName)).Exists())
+            {
+                ModelState.AddModelError("User", "Useraccount cannot be created");
+                return "";
+            }
+            await _userIdentityHelper.AddRoleToUser(userName, "FrontendApp");
+            if (!await _userIdentityHelper.UserHasRole(userName, "FrontendApp"))
+            {
+                ModelState.AddModelError("Role", "Role cannot be added to the account");
+                return "";
+            }
+            return userName;
+        }
+
+        protected async Task RemoveAppUseraccountIfExisting(string username)
+        {
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                await _userIdentityHelper.RemoveAllRolesFromUser(username);
+                await _userIdentityHelper.RemoveAppUser(username);
+            }
+        }
+    }
+}
