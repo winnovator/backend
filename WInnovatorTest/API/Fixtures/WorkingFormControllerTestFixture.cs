@@ -11,6 +11,7 @@ namespace WInnovatorTest.API.Fixtures
         public ILogger<WorkingFormController> _logger;
         public WorkingFormController _controller;
         public DesignShop _designShop;
+        public DesignShop _designShopWithoutWorkingForms;
         public DesignShopWorkingForm _currentWorkingForm;
 
         public WorkingFormControllerTestFixture()
@@ -40,6 +41,10 @@ namespace WInnovatorTest.API.Fixtures
             // Add one we'll remember
             _designShop = new DesignShop();
             _applicationTestDbContext.DesignShop.Add(_designShop);
+
+            // And one without any workingforms
+            _designShopWithoutWorkingForms = new DesignShop();
+            _applicationTestDbContext.DesignShop.Add(_designShopWithoutWorkingForms);
 
             // And throw in another empty designshops
             for (var i = 0; i < 6; i++)

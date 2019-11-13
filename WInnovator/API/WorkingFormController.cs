@@ -1,14 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
 using WInnovator.Data;
 using WInnovator.Models;
 using WInnovator.ViewModels;
@@ -94,6 +94,7 @@ namespace WInnovator.API
             if (dswf == null)
             {
                 _logger.LogTrace($"Designshop with id {designShopId} doesn't have a current workingform.'");
+                return NotFound();
             }
             else
             {
