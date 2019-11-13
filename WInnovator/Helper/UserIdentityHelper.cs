@@ -1,42 +1,40 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using PasswordGenerator;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using PasswordGenerator;
 using WInnovator.Data;
 using WInnovator.Helper;
 using WInnovator.Interfaces;
-using WInnovator.Models;
 
 namespace WInnovator.Helper
 {
     public class UserIdentityHelper : IUserIdentityHelper
     {
         private readonly ApplicationDbContext _context;
-        private IServiceProvider _serviceProvider;
-        private ILogger<UserIdentityHelper> _logger;
-        private UserManager<IdentityUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<UserIdentityHelper> _logger;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public UserIdentityHelper(ApplicationDbContext context, IServiceProvider serviceProvider, ILogger<UserIdentityHelper> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public UserIdentityHelper(ApplicationDbContext context, ILogger<UserIdentityHelper> logger, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _context = context;
-            _serviceProvider = serviceProvider;
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
         }
 
+        #region "Public methods defined in the interface"
         public async Task CreateConfirmedUserIfNonExistent(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
@@ -166,7 +164,8 @@ namespace WInnovator.Helper
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
+        #endregion
+        
         private async Task<Claim> GenerateNotBeforeClaim(IdentityUser user)
         {
             if(user.IsAppUserAccount())
