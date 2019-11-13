@@ -10,7 +10,6 @@ using WInnovator.Data;
 
 namespace WInnovator.Data.Migrations
 {
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20191026122044_Description of DesignShop is required")]
     partial class DescriptionofDesignShopisrequired

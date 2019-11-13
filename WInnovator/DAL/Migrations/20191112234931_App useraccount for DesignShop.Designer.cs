@@ -10,7 +10,6 @@ using WInnovator.Data;
 
 namespace WInnovator.Data.Migrations
 {
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20191112234931_App useraccount for DesignShop")]
     partial class AppuseraccountforDesignShop
