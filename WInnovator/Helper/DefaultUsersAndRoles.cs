@@ -1,5 +1,8 @@
-﻿namespace WInnovator.Helper
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace WInnovator.Helper
 {
+    [ExcludeFromCodeCoverage]
     public static class DefaultUsersAndRoles
     {
         public static readonly string defaultMailPartOfAppUserAccounts = "@winnovator.noreply.windesheim.nl";
@@ -27,6 +30,7 @@
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public class UserData
     {
         public string email { get; set; }
