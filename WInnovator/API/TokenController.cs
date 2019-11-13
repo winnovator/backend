@@ -1,9 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using WInnovator.Interfaces;
 using WInnovator.ViewModels;
 
@@ -14,13 +13,11 @@ namespace WInnovator.API
     [AllowAnonymous]
     public class TokenController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly IUserIdentityHelper _userIdentityHelper;
 
         [ExcludeFromCodeCoverage]
-        public TokenController(IUserIdentityHelper userIdentityHelper, IConfiguration configuration)
+        public TokenController(IUserIdentityHelper userIdentityHelper)
         {
-            _configuration = configuration;
             _userIdentityHelper = userIdentityHelper;
         }
 
