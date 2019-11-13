@@ -12,8 +12,8 @@ namespace WInnovator.Data.Migrations
 {
     [ExcludeFromCodeCoverage]
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191026122044_Description of DesignShop is required")]
-    partial class DescriptionofDesignShopisrequired
+    [Migration("20191112234931_App useraccount for DesignShop")]
+    partial class AppuseraccountforDesignShop
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -228,6 +228,9 @@ namespace WInnovator.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AppUseraccount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");

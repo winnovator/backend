@@ -9,8 +9,12 @@ namespace WInnovator.Interfaces
     public interface IUserIdentityHelper
     {
         Task CreateConfirmedUserIfNonExistent(string username, string password);
-        Task AddRoleToUser(string username, string roleName);
-        Task CreateRoleIfNonExistent(string roleName);
+        Task AddRoleToUser(string username, string rolename);
+        Task CreateRoleIfNonExistent(string rolename);
         Task<IdentityUser> SearchUser(string username);
+        Task<bool> UserHasRole(string username, string rolename);
+        Task RemoveAppUser(string username);
+        Task RemoveAllRolesFromUser(string username);
+        string ConstructAppUsername();
     }
 }

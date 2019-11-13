@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
@@ -14,10 +15,12 @@ namespace WInnovator.Pages.DesignShops
     public class DeleteModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly IUserIdentityHelper _userIdentityHelper;
 
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context)
+        public DeleteModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
         {
             _context = context;
+            _userIdentityHelper = userIdentityHelper;
         }
 
         [BindProperty]
@@ -50,11 +53,22 @@ namespace WInnovator.Pages.DesignShops
 
             if (DesignShop != null)
             {
+                await RemoveAppUseraccountIfExisting(DesignShop.AppUseraccount);
+
                 _context.DesignShop.Remove(DesignShop);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task RemoveAppUseraccountIfExisting(string username)
+        {
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                await _userIdentityHelper.RemoveAllRolesFromUser(DesignShop.AppUseraccount);
+                await _userIdentityHelper.RemoveAppUser(DesignShop.AppUseraccount);
+            }
         }
     }
 }

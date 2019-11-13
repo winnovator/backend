@@ -2,6 +2,8 @@
 {
     public static class DefaultUsersAndRoles
     {
+        public static readonly string defaultMailPartOfAppUserAccounts = "@winnovator.noreply.windesheim.nl";
+
         public static string[] getRoles()
         {
             return new string[] {

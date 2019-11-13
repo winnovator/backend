@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using WInnovator.Helper;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
@@ -12,10 +15,12 @@ namespace WInnovator.Pages.DesignShops
     public class CreateModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly IUserIdentityHelper _userIdentityHelper;
 
-        public CreateModel(WInnovator.Data.ApplicationDbContext context)
+        public CreateModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
         {
             _context = context;
+            _userIdentityHelper = userIdentityHelper;
         }
 
         public IActionResult OnGet()
@@ -30,15 +35,42 @@ namespace WInnovator.Pages.DesignShops
         // more details see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            string createdUser="";
+
+            if (ModelState.IsValid)
+            {
+                createdUser = await CreateUserForDesignShop();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+            DesignShop.AppUseraccount = createdUser;
+
             _context.DesignShop.Add(DesignShop);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task<string> CreateUserForDesignShop()
+        {
+            string userName = _userIdentityHelper.ConstructAppUsername();
+            await _userIdentityHelper.CreateConfirmedUserIfNonExistent(userName, "");
+            if(!(await _userIdentityHelper.SearchUser(userName)).Exists())
+            {
+                ModelState.AddModelError("User", "Useraccount cannot be created");
+                return "";
+            }
+            await _userIdentityHelper.AddRoleToUser(userName, "FrontendApp");
+            if(!await _userIdentityHelper.UserHasRole(userName, "FrontendApp"))
+            {
+                ModelState.AddModelError("Role", "Role cannot be added to the account");
+                return "";
+            }
+            return userName;
         }
     }
 }

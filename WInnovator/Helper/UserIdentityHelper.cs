@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using PasswordGenerator;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using WInnovator.Helper;
 using WInnovator.Interfaces;
 
 namespace WInnovator.Helper
@@ -52,7 +54,7 @@ namespace WInnovator.Helper
                 }
                 else
                 {
-                    await AddRoleToUserIfNonExistent(username, roleName, user);
+                    await AddRoleToUserIfNonExistent(user, roleName);
                 }
             }
             else
@@ -75,6 +77,48 @@ namespace WInnovator.Helper
             return await _userManager.FindByEmailAsync(username);
         }
 
+        public async Task RemoveAppUser(string username)
+        {
+            var user = await SearchUser(username);
+
+            if(user.Exists())
+            {
+                var logins = await _userManager.GetLoginsAsync(user);
+                foreach(var login in logins)
+                {
+                    await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
+                }
+                await _userManager.DeleteAsync(user);
+            }
+        }
+
+        public string ConstructAppUsername()
+        {
+            return ConstructAppUsernamePrefix() + DefaultUsersAndRoles.defaultMailPartOfAppUserAccounts;
+        }
+
+        public async Task RemoveAllRolesFromUser(string username)
+        {
+            var user = await SearchUser(username);
+
+            if (user.Exists())
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+            }
+        }
+
+        public async Task<bool> UserHasRole(string username, string rolename)
+        {
+            var user = await SearchUser(username);
+            return await UserHasRole(user, rolename);
+        }
+
+        private async Task<bool> UserHasRole(IdentityUser user, string rolename)
+        {
+            return await _userManager.IsInRoleAsync(user, rolename);
+        }
+
         private async Task CreateRole(string roleName)
         {
             IdentityResult identityResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
@@ -84,20 +128,20 @@ namespace WInnovator.Helper
             }
         }
 
-        private async Task AddRoleToUserIfNonExistent(string username, string roleName, IdentityUser user)
+        private async Task AddRoleToUserIfNonExistent(IdentityUser user, string roleName)
         {
-            if (!(await _userManager.IsInRoleAsync(user, roleName)))
+            if (!(await UserHasRole(user, roleName)))
             {
-                await GiveUserTheNewRole(username, roleName, user);
+                await GiveUserTheNewRole(user, roleName);
             }
         }
 
-        private async Task GiveUserTheNewRole(string username, string roleName, IdentityUser user)
+        private async Task GiveUserTheNewRole(IdentityUser user, string roleName)
         {
             IdentityResult identityResult = await _userManager.AddToRoleAsync(user, roleName);
             if (!identityResult.Succeeded)
             {
-                _logger.LogError($"Error adding role { roleName } to user { username }: { identityResult.Errors.ToString() }");
+                _logger.LogError($"Error adding role { roleName } to user { user.Email }: { identityResult.Errors.ToString() }");
             }
         }
 
@@ -122,6 +166,12 @@ namespace WInnovator.Helper
         {
             return await _roleManager.RoleExistsAsync(roleName);
         }
+
+        private string ConstructAppUsernamePrefix()
+        {
+            Guid guid = Guid.NewGuid();
+            return guid.ToString("N");
+        }
     }
 }
 
@@ -130,5 +180,10 @@ public static class UserIdentityExtension
     public static bool Exists(this IdentityUser user)
     {
         return user != null;
+    }
+
+    public static bool IsAppUserAccount(this IdentityUser user)
+    {
+        return user.Email.EndsWith(DefaultUsersAndRoles.defaultMailPartOfAppUserAccounts);
     }
 }
