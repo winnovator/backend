@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 using WInnovator.Interfaces;
 
 namespace WInnovator.Pages.DesignShops
 {
+    [ExcludeFromCodeCoverage]
     public class PageModelWithAppUserMethods : PageModel
     {
         protected readonly WInnovator.Data.ApplicationDbContext _context;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -35,7 +36,7 @@ namespace WInnovator.Helper
         }
 
         #region "Public methods defined in the interface"
-        public async Task CreateConfirmedUserIfNonExistent(string username, string password)
+        public async Task<bool> CreateConfirmedUserIfNonExistent(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(password))
             {
@@ -47,11 +48,13 @@ namespace WInnovator.Helper
             if(!(await SearchUser(username)).Exists())
             {
                 // No, create it!
-                await CreateConfirmedUser(username, password);
+                return await CreateConfirmedUser(username, password);
             }
+
+            return true;
         }
 
-        public async Task AddRoleToUser(string username, string roleName)
+        public async Task<bool> AddRoleToUser(string username, string roleName)
         {
             IdentityUser user;
 
@@ -62,25 +65,29 @@ namespace WInnovator.Helper
                 if (!await RoleExists(roleName))
                 {
                     _logger.LogError($"Non-existing role { roleName } defined for user { username } ");
+                    return false;
                 }
                 else
                 {
-                    await AddRoleToUserIfNonExistent(user, roleName);
+                    return await AddRoleToUserIfNonExistent(user, roleName);
                 }
             }
             else
             {
                 // No, create error in log!
                 _logger.LogError($"Error, user { username } doesn't exist!");
+                return false;
             }
         }
 
-        public async Task CreateRoleIfNonExistent(string roleName)
+        public async Task<bool> CreateRoleIfNonExistent(string roleName)
         {
             if (!await RoleExists(roleName))
             {
-                await CreateRole(roleName);
+                return await CreateRole(roleName);
             }
+
+            return true;
         }
 
         public async Task<IdentityUser> SearchUser(string username)
@@ -99,7 +106,7 @@ namespace WInnovator.Helper
             return await _userManager.GetRolesAsync(user);
         }
 
-        public async Task RemoveAppUser(string username)
+        public async Task<bool> RemoveAppUser(string username)
         {
             var user = await SearchUser(username);
 
@@ -110,8 +117,16 @@ namespace WInnovator.Helper
                 {
                     await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
                 }
-                await _userManager.DeleteAsync(user);
+                IdentityResult identityResult = await _userManager.DeleteAsync(user);
+                if (!identityResult.Succeeded)
+                {
+                    return false;
+                }
+
+                return true;
             }
+
+            return false;
         }
 
         public string ConstructAppUsername()
@@ -119,23 +134,33 @@ namespace WInnovator.Helper
             return ConstructAppUsernamePrefix() + DefaultUsersAndRoles.defaultMailPartOfAppUserAccounts;
         }
 
-        public async Task RemoveAllRolesFromUser(string username)
+        public async Task<bool> RemoveAllRolesFromUser(string username)
         {
             var user = await SearchUser(username);
 
             if (user.Exists())
             {
                 var roles = await GetAllRolesForUser(user);
-                await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+                IdentityResult identityResult =  await _userManager.RemoveFromRolesAsync(user, roles.ToArray());
+                if (!identityResult.Succeeded)
+                {
+                    return false;
+                }
+
+                return true;
             }
+
+            return false;
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task<bool> UserHasRole(string username, string rolename)
         {
             var user = await SearchUser(username);
             return await UserHasRole(user, rolename);
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task<string> GenerateJwtToken(string username)
         {
             // Source: https://www.youtube.com/watch?v=9QU_y7-VsC8
@@ -179,8 +204,6 @@ namespace WInnovator.Helper
         {
             if (user.IsAppUserAccount())
             {
-                // TODO: Search for correct designshop and determine valid date when token must expire
-
                 return new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset((await GetDesignShopDate(user)).Date.AddDays(1).AddTicks(-1)).ToUnixTimeSeconds().ToString());
             }
             return new Claim(JwtRegisteredClaimNames.Exp, new DateTimeOffset(DateTime.Now.AddDays(1)).ToUnixTimeSeconds().ToString());
@@ -196,30 +219,39 @@ namespace WInnovator.Helper
             return await _userManager.IsInRoleAsync(user, rolename);
         }
 
-        private async Task CreateRole(string roleName)
+        private async Task<bool> CreateRole(string roleName)
         {
             IdentityResult identityResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             if (!identityResult.Succeeded)
             {
-                _logger.LogError($"Error creating role { roleName }: { identityResult.Errors.ToString() }");
+                _logger.LogError($"Error creating role {roleName}");
+                return false;
             }
+
+            return true;
         }
 
-        private async Task AddRoleToUserIfNonExistent(IdentityUser user, string roleName)
+        [ExcludeFromCodeCoverage]
+        private async Task<bool> AddRoleToUserIfNonExistent(IdentityUser user, string roleName)
         {
             if (!(await UserHasRole(user, roleName)))
             {
-                await GiveUserTheNewRole(user, roleName);
+                return await GiveUserTheNewRole(user, roleName);
             }
+
+            return true;
         }
 
-        private async Task GiveUserTheNewRole(IdentityUser user, string roleName)
+        private async Task<bool> GiveUserTheNewRole(IdentityUser user, string roleName)
         {
             IdentityResult identityResult = await _userManager.AddToRoleAsync(user, roleName);
             if (!identityResult.Succeeded)
             {
-                _logger.LogError($"Error adding role { roleName } to user { user.Email }: { identityResult.Errors.ToString() }");
+                _logger.LogError($"Error adding role { roleName } to user { user.Email }");
+                return false;
             }
+
+            return true;
         }
 
         private string GenerateSecurePassword()
@@ -229,14 +261,20 @@ namespace WInnovator.Helper
 
         }
 
-        private async Task CreateConfirmedUser(string username, string password)
+        private async Task<bool> CreateConfirmedUser(string username, string password)
         {
-            IdentityResult identityResult;
-            IdentityUser user;
+            //IdentityResult identityResult;
+            // IdentityUser user;
 
-            user = new IdentityUser() { UserName = username, Email = username, EmailConfirmed = true };
-            identityResult = await _userManager.CreateAsync(user, password);
-            _logger.LogError($"Error creating user { user.UserName }: { identityResult.Errors.ToString() }");
+            var user = new IdentityUser() { UserName = username, Email = username, EmailConfirmed = true };
+            var identityResult = await _userManager.CreateAsync(user, password);
+            if(!identityResult.Succeeded)
+            {
+                _logger.LogError($"Error creating user { user.UserName }: { identityResult.Errors.ToString() }");
+                return false;
+            }
+
+            return true;
         }
 
         private async Task<bool> RoleExists(string roleName)
@@ -244,6 +282,7 @@ namespace WInnovator.Helper
             return await _roleManager.RoleExistsAsync(roleName);
         }
 
+        [ExcludeFromCodeCoverage]
         private string ConstructAppUsernamePrefix()
         {
             Guid guid = Guid.NewGuid();
