@@ -158,7 +158,7 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.GetAllRolesForUser(_fixture._appUser);
             
             // Assert
-            var actualResult = Assert.IsType<IList<string>>(result);
+            var actualResult = Assert.IsType<List<string>>(result);
             Assert.Equal(_fixture._appUserRoles, actualResult);
         }
 
