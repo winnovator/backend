@@ -27,8 +27,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CreateConfirmedUserIfNonExistent(_fixture._appUser.Email, "");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -38,8 +38,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CreateConfirmedUserIfNonExistent(_fixture._normalUser.Email, "");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -49,8 +49,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CreateConfirmedUserIfNonExistent("blabla@blabla.bla", "");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -60,8 +60,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.AddRoleToUser(_fixture._normalUser.Email, _fixture._appUserRole);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -71,8 +71,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.AddRoleToUser(_fixture._normalUser.Email, "NonExistingRole");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -82,8 +82,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.AddRoleToUser("NonExistingUser", _fixture._appUserRole);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
         
         [Fact]
@@ -93,8 +93,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CreateRoleIfNonExistent(_fixture._appUserRole);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -104,8 +104,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CreateRoleIfNonExistent("newRole");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -115,8 +115,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.SearchUser(_fixture._appUser.Email);
             
             // Assert
-            var actualResult = Assert.IsType<Task<IdentityUser>>(result);
-            Assert.Equal(_fixture._appUser, actualResult.Result);
+            var actualResult = Assert.IsType<IdentityUser>(result);
+            Assert.Equal(_fixture._appUser, actualResult);
         }
 
         [Fact]
@@ -126,8 +126,7 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.SearchUser("NonExistingAccount");
             
             // Assert
-            var actualResult = Assert.IsType<Task<IdentityUser>>(result);
-            Assert.True(actualResult.Result==null);
+            Assert.True(result==null);
         }
 
         [Fact]
@@ -137,8 +136,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CredentialsAreValid(_fixture._normalUser.Email, _fixture._validPassword);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -148,8 +147,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.CredentialsAreValid(_fixture._normalUser.Email, "invalidPassword");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -159,8 +158,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.GetAllRolesForUser(_fixture._appUser);
             
             // Assert
-            var actualResult = Assert.IsType<Task<IList<string>>>(result);
-            Assert.Equal(_fixture._appUserRoles, actualResult.Result);
+            var actualResult = Assert.IsType<IList<string>>(result);
+            Assert.Equal(_fixture._appUserRoles, actualResult);
         }
 
         [Fact]
@@ -170,8 +169,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAppUser(_fixture._appUser.Email);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -181,8 +180,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAppUser(_fixture._normalUser.Email);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -192,8 +191,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAppUser("blabla@bla.bla");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -217,8 +216,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAllRolesFromUser(_fixture._appUser.Email);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.True(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.True(actualResult);
         }
 
         [Fact]
@@ -228,8 +227,8 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAllRolesFromUser(_fixture._normalUser.Email);
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
         [Fact]
@@ -239,12 +238,10 @@ namespace WInnovatorTest.Helper
             var result = await _fixture._controller.RemoveAllRolesFromUser("blabla@bla.bla");
             
             // Assert
-            var actualResult = Assert.IsType<Task<bool>>(result);
-            Assert.False(actualResult.Result);
+            var actualResult = Assert.IsType<bool>(result);
+            Assert.False(actualResult);
         }
 
-        
-        
         [Fact]
         public void GenerateNotBeforeClaimTestWithAppUserAccount()
         {
