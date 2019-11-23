@@ -43,8 +43,6 @@ namespace WInnovator
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddHealthChecks();
-
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -141,6 +139,7 @@ namespace WInnovator
 
             // See https://medium.com/it-dead-inside/implementing-health-checks-for-asp-net-core-a-deep-dive-85a327be9a75 for adding additional checks
             // https://github.com/xabaril/AspNetCore.Diagnostics.HealthChecks
+            //services.AddHealthChecks();
             services.AddHealthChecks()
                 .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
@@ -166,25 +165,17 @@ namespace WInnovator
                     // we want to serve the Swagger UI at the app's root (http://localhost:<port>/), so the RoutePrefix property has to be set to an empty string
                     c.RoutePrefix = "swagger";
                 });
-                
-                // In development we'll accept any request from all origins
-                app.UseCors(builder => builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                    );
             }
             else
             {
                 app.UseExceptionHandler("/Error");
-                
-                // In production, we only accept request from the same origin
-                app.UseCors(builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                );
             }
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+            );
 
             app.UseStaticFiles();
 
