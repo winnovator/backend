@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using WInnovator.Data;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using WInnovator.Helper;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
-    public class CreateModel : PageModel
+    [Authorize(Roles = "Administrator,Facilitator")]
+    public class CreateModel : PageModelWithAppUserMethods
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
-
-        public CreateModel(WInnovator.Data.ApplicationDbContext context)
+        public CreateModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
-            _context = context;
         }
 
         public IActionResult OnGet()
@@ -33,15 +30,25 @@ namespace WInnovator.Pages.DesignShops
         // more details see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            string createdUser="";
+
+            if (ModelState.IsValid)
+            {
+                createdUser = await CreateUserForDesignShop();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+
+            DesignShop.AppUseraccount = createdUser;
 
             _context.DesignShop.Add(DesignShop);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
+
     }
 }

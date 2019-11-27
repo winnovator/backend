@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using WInnovator.Data;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using WInnovator.Interfaces;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShops
 {
     [ExcludeFromCodeCoverage]
-    public class DeleteModel : PageModel
+    [Authorize(Roles = "Administrator,Facilitator")]
+    public class DeleteModel : PageModelWithAppUserMethods
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
-
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context)
+        public DeleteModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -51,6 +48,8 @@ namespace WInnovator.Pages.DesignShops
 
             if (DesignShop != null)
             {
+                await RemoveAppUseraccountIfExisting(DesignShop.AppUseraccount);
+
                 _context.DesignShop.Remove(DesignShop);
                 await _context.SaveChangesAsync();
             }

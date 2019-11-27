@@ -1,9 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WInnovator.Models;
 using WInnovator.ViewModels;
 using WInnovatorTest.API.Fixtures;
@@ -113,7 +113,20 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test5_GetListOfImagesOfValidCurrentWorkingForm()
+        public async Task Test5_GetCurrentWorkingFormOfInvalidDesignShop()
+        {
+            // Act
+            var result = await _fixture._controller.GetCurrentWorkingFormOfDesignShop(_fixture._designShopWithoutWorkingForms.Id);
+
+            // Assert
+            // First assert: did we get an actionresult with a list
+            var firstResult = Assert.IsType<ActionResult<WorkingFormViewModel>>(result);
+            // Then, check if the result is a NotFound
+            Assert.IsType<NotFoundResult>(firstResult.Result);
+        }
+        
+        [Fact]
+        public async Task Test6_GetListOfImagesOfValidCurrentWorkingForm()
         {
             // Act
             var result = await _fixture._controller.GetListOfImagesOfWorkingForm(_fixture._currentWorkingForm.Id);
@@ -128,7 +141,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test6_GetListOfImagesOfInvalidCurrentWorkingForm()
+        public async Task Test7_GetListOfImagesOfInvalidCurrentWorkingForm()
         {
             // Act
             var result = await _fixture._controller.GetListOfImagesOfWorkingForm(new Guid());
@@ -139,5 +152,6 @@ namespace WInnovatorTest.API
             // Then, check if the result is a NotFound
             Assert.IsType<NotFoundResult>(firstResult.Result);
         }
+        
     }
 }

@@ -1,24 +1,24 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 using WInnovator.Data;
+using WInnovator.Helper;
 using WInnovator.Interfaces;
-using WInnovator.Services;
 
 namespace WInnovator
 {
@@ -43,13 +43,11 @@ namespace WInnovator
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddHealthChecks();
-
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddTransient<IJwtTokenService, JwtTokenService>();
+            services.AddTransient<IUserIdentityHelper, UserIdentityHelper>();
 
             // Add authentication via Google and Twitter
             services.AddAuthentication(options =>
@@ -141,12 +139,13 @@ namespace WInnovator
 
             // See https://medium.com/it-dead-inside/implementing-health-checks-for-asp-net-core-a-deep-dive-85a327be9a75 for adding additional checks
             // https://github.com/xabaril/AspNetCore.Diagnostics.HealthChecks
+            //services.AddHealthChecks();
             services.AddHealthChecks()
                 .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
         {
             if (!isProduction)
             {
@@ -166,25 +165,17 @@ namespace WInnovator
                     // we want to serve the Swagger UI at the app's root (http://localhost:<port>/), so the RoutePrefix property has to be set to an empty string
                     c.RoutePrefix = "swagger";
                 });
-                
-                // In development we'll accept any request from all origins
-                app.UseCors(builder => builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                    );
             }
             else
             {
                 app.UseExceptionHandler("/Error");
-                
-                // In production, we only accept request from the same origin
-                app.UseCors(builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                );
             }
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+            );
 
             app.UseStaticFiles();
 
@@ -199,6 +190,47 @@ namespace WInnovator
                 endpoints.MapRazorPages();
                 endpoints.MapHealthChecks("/health");
             });
+
+            CreateRoles(userIdentityHelper).Wait();
+            createUsersIfNonexisting(userIdentityHelper).Wait();
+            addRolesToDefaultUsers(serviceProvider, userIdentityHelper).Wait();
+        }
+
+        private async Task CreateRoles(IUserIdentityHelper userIdentityHelper)
+        {
+            foreach (string roleName in DefaultUsersAndRoles.getRoles())
+            {
+                await userIdentityHelper.CreateRoleIfNonExistent(roleName);
+            }
+        }
+
+        private async Task createUsersIfNonexisting(IUserIdentityHelper userIdentityHelper)
+        {
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
+            {
+                await userIdentityHelper.CreateConfirmedUserIfNonExistent(userData.email, userData.password);
+            }
+        }
+
+        private async Task addRolesToDefaultUsers(IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
+        {
+            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
+            {
+                // Does the user exist?
+                if((await userIdentityHelper.SearchUser(userData.email)).Exists())
+                {
+                    foreach (string roleName in userData.defaultRoles)
+                    {
+                        await userIdentityHelper.AddRoleToUser(userData.email, roleName);
+                    }
+                } else
+                {
+                    // No, create error in log!
+                    _logger.LogError($"Error, cannot add roles to user { userData.email }, user doesn't exist!");
+                }
+            }
         }
     }
 }
