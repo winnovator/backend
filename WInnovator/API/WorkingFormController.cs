@@ -45,11 +45,9 @@ namespace WInnovator.API
             // Check if designshop exists
             if (!DesignShopExists(designShopId))
             {
-                _logger.LogError($"Unknown designshop, asked for id {designShopId}");
+                _logger.LogWarning($"Unknown designshop, asked for id {designShopId}");
                 return NotFound();
             }
-
-            _logger.LogTrace($"Searching workingforms for designshop id {designShopId}");
 
             IEnumerable<DesignShopWorkingForm> list = await _context.DesignShopWorkingForm
                 .Where(dswf => dswf.DesignShopId == designShopId)
@@ -79,7 +77,7 @@ namespace WInnovator.API
             // Check if designshop exists
             if (!DesignShopExists(designShopId))
             {
-                _logger.LogError($"Unknown designshop, asked for id {designShopId}");
+                _logger.LogWarning($"Unknown designshop, asked for id {designShopId}");
                 return NotFound();
             }
 
@@ -93,7 +91,7 @@ namespace WInnovator.API
             var currentWorkingForm = new WorkingFormViewModel();
             if (dswf == null)
             {
-                _logger.LogTrace($"Designshop with id {designShopId} doesn't have a current workingform.'");
+                _logger.LogWarning($"Designshop with id {designShopId} doesn't have a current workingform.'");
                 return NotFound();
             }
             else
@@ -122,11 +120,9 @@ namespace WInnovator.API
             // Check if the DesignShopWorkingForm exists
             if (!DesignShopWorkingFormExists(workingFormId))
             {
-                _logger.LogError($"Unknown DesignShopWorkingForm, asked for id {workingFormId}");
+                _logger.LogWarning($"Unknown DesignShopWorkingForm, asked for id {workingFormId}");
                 return NotFound();
             }
-
-            _logger.LogTrace($"Searching for images belonging to DesignShopWorkingForm with id {workingFormId}.");
 
             DesignShopWorkingForm designShopWorkingForm = await _context.DesignShopWorkingForm
                 .Where(dswf => dswf.Id == workingFormId)

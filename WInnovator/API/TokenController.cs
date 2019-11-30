@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using WInnovator.Interfaces;
 using WInnovator.ViewModels;
 
@@ -14,11 +15,13 @@ namespace WInnovator.API
     public class TokenController : ControllerBase
     {
         private readonly IUserIdentityHelper _userIdentityHelper;
+        private readonly ILogger<TokenController> _logger;
 
         [ExcludeFromCodeCoverage]
-        public TokenController(IUserIdentityHelper userIdentityHelper)
+        public TokenController(IUserIdentityHelper userIdentityHelper, ILogger<TokenController> logger)
         {
             _userIdentityHelper = userIdentityHelper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -31,10 +34,12 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<TokenModel>> GenerateToken([FromBody] TokenViewModel tokenViewModel)
         {
-            if(await _userIdentityHelper.CredentialsAreValid(tokenViewModel.Email, tokenViewModel.Password)) { 
+            if(await _userIdentityHelper.CredentialsAreValid(tokenViewModel.Email, tokenViewModel.Password)) {
+                _logger.LogTrace($"Generating token for verified email { tokenViewModel.Email }.");
                 return Ok(await GenerateToken(tokenViewModel.Email));
             } else
             {
+                _logger.LogWarning($"Invalid credentials entered, tried with email { tokenViewModel.Email }");
                 return BadRequest();
             }
         }
