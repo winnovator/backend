@@ -64,7 +64,7 @@ namespace WInnovator.Helper
             {
                 if (!await RoleExists(roleName))
                 {
-                    _logger.LogError($"Non-existing role { roleName } defined for user { username } ");
+                    _logger.LogError("Non-existing role { roleName } defined for user { username } ", roleName, username);
                     return false;
                 }
                 else
@@ -75,7 +75,7 @@ namespace WInnovator.Helper
             else
             {
                 // No, create error in log!
-                _logger.LogError($"Error, user { username } doesn't exist!");
+                _logger.LogError("Error, user { username } doesn't exist!", username);
                 return false;
             }
         }
@@ -224,10 +224,11 @@ namespace WInnovator.Helper
             IdentityResult identityResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
             if (!identityResult.Succeeded)
             {
-                _logger.LogError($"Error creating role {roleName}");
+                _logger.LogError("Error creating role { roleName }", roleName);
                 return false;
             }
 
+            _logger.LogTrace("Role { roleName } created.", roleName);
             return true;
         }
 
@@ -247,10 +248,11 @@ namespace WInnovator.Helper
             IdentityResult identityResult = await _userManager.AddToRoleAsync(user, roleName);
             if (!identityResult.Succeeded)
             {
-                _logger.LogError($"Error adding role { roleName } to user { user.Email }");
+                _logger.LogError("Error adding role { roleName } to user { user }", roleName, user.Email);
                 return false;
             }
 
+            _logger.LogTrace("Role { roleName } added to user { user }.", roleName, user.Email);
             return true;
         }
 
@@ -270,10 +272,11 @@ namespace WInnovator.Helper
             var identityResult = await _userManager.CreateAsync(user, password);
             if(!identityResult.Succeeded)
             {
-                _logger.LogError($"Error creating user { user.UserName }: { identityResult.Errors.ToString() }");
+                _logger.LogError("Error creating user { user }: { identityResultErrors }", user.UserName, identityResult.Errors.ToString());
                 return false;
             }
 
+            _logger.LogTrace("User { user } created. ", user.UserName);
             return true;
         }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +42,7 @@ namespace WInnovator.API
         /// </summary>
         /// <param name="designShopId">The designshop to which the image belongs</param>
         /// <param name="uploadedFile">The image itself</param>
-        /// <returns>The correct statuscode (202, 400 or 404)</returns>
+        /// <returns>The correct statuscode (202, 400, 401 or 404)</returns>
         [HttpPost("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,24 +52,24 @@ namespace WInnovator.API
         {
             if (uploadedFile == null)
             {
+                _logger.LogWarning($"Uploaded file is non existing (null), designshopId = { designShopId }");
                 return BadRequest();
             }
 
             // Check if the DesignShop has a current WorkingForm set
             var dswf = await _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId==designShopId && dswf.IsCurrentWorkingForm == true).FirstOrDefaultAsync();
 
-            //var currentShop = await _context.DesignShop.Include(shop => shop.DesignShopWorkingForms.Where(dswf => dswf.IsCurrentWorkingForm==true))
-            //    .FirstOrDefaultAsync(shop => shop.Id == designShopId);
-            
             if (dswf == null)
             {
                 // There's no workingform set, return 404 Not Found
+                _logger.LogWarning($"File uploaded for designshop { designShopId }, but there's no current workingform.");
                 return NotFound();
             }
 
             if (!contentHasImageMimetype(uploadedFile.ContentType) ||
                 !contentHasImageExtension(Path.GetExtension(uploadedFile.FileName)))
             {
+                _logger.LogWarning($"File uploaded for designshop { designShopId } has an invalid mimetype or extension.");
                 return BadRequest();
             }
 

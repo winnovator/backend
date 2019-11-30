@@ -56,6 +56,7 @@ namespace WInnovator.API
 
             IEnumerable<DesignShopViewModel> shopList = list.Select(shop => new DesignShopViewModel
                 {Id = shop.Id, Description = shop.Description, Date = shop.Date});
+            _logger.LogTrace($"Returning list of { shopList.Count() } designshops.");
             return shopList.ToList();
         }
 
@@ -73,6 +74,7 @@ namespace WInnovator.API
         {
             if (!DesignShopExists(id))
             {
+                _logger.LogWarning($"QrCode for guid { id } requested, but id isn't found");
                 return NotFound();
             }
 
@@ -96,11 +98,11 @@ namespace WInnovator.API
         {
             if (!DesignShopExistsAndHasAppUseraccount(id))
             {
+                _logger.LogWarning($"AppToken for guid { id } requested, but id isn't found");
                 return NotFound();
             }
 
             return Ok(await GenerateAppToken(id));
-            //return new ObjectResult(await GenerateAppToken(id));
         }
 
         private bool DesignShopExists(Guid id)

@@ -38,12 +38,11 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ImageStore>> GetImage(Guid id)
         {
-            _logger.LogTrace($"Searching for image with id {id}");
             var image = await _context.ImageStore.FindAsync(id);
 
             if (image == null)
             {
-                _logger.LogError($"Image with id {id} not found.");
+                _logger.LogWarning($"Image with id {id} not found.");
                 return NotFound();
             }
 

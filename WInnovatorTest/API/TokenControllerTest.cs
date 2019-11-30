@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using WInnovator.API;
 using WInnovator.Interfaces;
@@ -22,7 +23,7 @@ namespace WInnovatorTest.API
             _userIdentityHelper.Setup(uih => uih.CredentialsAreValid(It.IsAny<string>(), "Invalid")).ReturnsAsync(false);
             _userIdentityHelper.Setup(uih => uih.CredentialsAreValid("Invalid", It.IsAny<string>())).ReturnsAsync(false);
             _userIdentityHelper.Setup(uih => uih.GenerateJwtToken(It.IsAny<string>())).ReturnsAsync((string s) => s + "token");
-            _controller = new TokenController( _userIdentityHelper.Object);
+            _controller = new TokenController( _userIdentityHelper.Object, Mock.Of<ILogger<TokenController>>());
         }
 
         [Fact]
