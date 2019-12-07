@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,13 +28,15 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         public SelectList DesignShops { get; set; }
         [BindProperty]
         public IEnumerable<SelectListItem> CurrentDesignShop { get; set; }
+        public Guid currentDesignShopGuid { get; set; }
 
         public async Task OnGetAsync()
         {
             LoadDesignShops();
             DesignShop first = listOfDesignShop.FirstOrDefault();
             if(first != null)
-            { 
+            {
+                currentDesignShopGuid = first.Id;
                 await GetWorkingForms(first.Id);
             }
 
@@ -53,6 +55,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             try
             {
                 Guid dsGuid = Guid.Parse(ModelState.Values.ToList().First().AttemptedValue);
+                currentDesignShopGuid = dsGuid;
                 await GetWorkingForms(dsGuid);
 
                 return Page();
@@ -75,7 +78,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         private void LoadDesignShops()
         {
             listOfDesignShop = _context.DesignShop.Where(ds => ds.Date >= DateTime.UtcNow).OrderBy(ds => ds.Date).ToList();
-            DesignShops = new SelectList(listOfDesignShop.Where(ds => ds.Date >= DateTime.UtcNow).OrderBy(ds => ds.Date), nameof(DesignShop.Id), nameof(DesignShop.Description));
+            DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
         }
     }
 }

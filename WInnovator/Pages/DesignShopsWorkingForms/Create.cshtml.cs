@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
+using WInnovator.Helper;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShopsWorkingForms
@@ -19,10 +23,11 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             _context = context;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(Guid? designshopId)
         {
-        ViewData["DesignShopId"] = new SelectList(_context.DesignShop, "Id", "Description");
-        ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Description");
+            // Only the current designshop can be selected, no changes can be made!
+            ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == designshopId), "Id", "Description");
+            ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Description");
             return Page();
         }
 

@@ -22,7 +22,7 @@
     @if (Model.DesignShopWorkingForm != null)
     {
     <p>
-        <a asp-page="Create">Create New</a>
+        <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Create New</a>
     </p>
     <table class="table">
         <thead>
