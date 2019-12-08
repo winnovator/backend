@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -17,10 +18,12 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     public class IndexModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(WInnovator.Data.ApplicationDbContext context)
+        public IndexModel(WInnovator.Data.ApplicationDbContext context, ILogger<IndexModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public IList<DesignShopWorkingForm> DesignShopWorkingForm { get;set; }
@@ -33,14 +36,32 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         public async Task OnGetAsync()
         {
             LoadDesignShops();
-            DesignShop first = listOfDesignShop.FirstOrDefault();
-            if(first != null)
+            DesignShop selected = null;
+            if (TempData["selectedDesignShop"] != null)
             {
-                currentDesignShopGuid = first.Id;
-                await GetWorkingForms(first.Id);
+                try
+                {
+                    Guid selectedDesignShop = Guid.Parse(TempData["selectedDesignShop"].ToString());
+                    if (selectedDesignShop != null && listOfDesignShop.Where(ds => ds.Id == selectedDesignShop).Count() > 0)
+                    {
+                        selected = listOfDesignShop.Where(ds => ds.Id == selectedDesignShop).First();
+                    }
+                } catch
+                {
+                    _logger.LogError("Exception thrown when trying to get the selectedDesignShopId from TempData");
+                }
+            }
+            if(selected == null) 
+            {
+                selected = listOfDesignShop.FirstOrDefault();
+            }
+            if(selected != null)
+            {
+                currentDesignShopGuid = selected.Id;
+                await GetWorkingForms(selected.Id);
             }
 
-            DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
+            DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description), selected.Id);
         }
 
         public async Task<IActionResult> OnPostAsync()

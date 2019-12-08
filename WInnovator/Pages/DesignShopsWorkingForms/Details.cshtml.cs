@@ -37,6 +37,8 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             {
                 return NotFound();
             }
+
+            TempData["selectedDesignShop"] = DesignShopWorkingForm.DesignShopId;
             return Page();
         }
     }
