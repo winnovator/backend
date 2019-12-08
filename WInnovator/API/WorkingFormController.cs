@@ -154,7 +154,7 @@ namespace WInnovator.API
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError($"An error occurred while changing the order of DesignShopWorkingForm { id } ");
+                    _logger.LogError($"An error occurred while changing the order of DesignShopWorkingForm { id }. Stacktrace:\n" + e.StackTrace.ToString());
                     continue;
                 }
                 count++;
