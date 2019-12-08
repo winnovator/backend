@@ -1,0 +1,89 @@
+﻿@page
+@model WInnovator.Pages.DesignShopsWorkingForms.ReorderModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+
+<body>
+    <style>
+        #sortable tr:hover {
+            background-color: #0094ff;
+            color: #fff;
+        }
+    </style>
+
+    <div class="container">
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForms[0].DesignShop)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForms[0].WorkingForm)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="sortable" style="cursor:pointer;">
+                    @foreach (var item in Model.ArrangeddDesignShopWorkingForms)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DesignShop.Description)
+                            </td>
+                            <td class="taskSingleInline" id="@(item.Id)" data-taskid="@(item.Id)">
+                                @Html.DisplayFor(modelItem => item.WorkingForm.Description)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+            <a asp-page="./Index">Back to List</a>
+        </div>
+    </div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        var yourApp = yourApp || {};
+        yourApp.Urls = yourApp.Urls || {};
+        yourApp.Urls.updateUrl = "/api/WorkingForm/reorder";
+    </script>
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#sortable").sortable({
+                update: function (event, ui) {
+                    var itemIds = "";
+                    $("#sortable").find(".taskSingleInline").each(function () {
+                        var itemId = $(this).attr("data-taskid");
+                        itemIds = itemIds + itemId + ",";
+
+                    });
+                    $.ajax({
+                        url: yourApp.Urls.updateUrl,
+                        data: { itemIds: itemIds },
+                        type: 'POST',
+                        success: function (data) {
+
+                        },
+                        error: function (xhr, status, error) {
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+
+}

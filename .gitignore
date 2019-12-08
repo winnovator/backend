@@ -332,3 +332,5 @@ ASALocalRun/
 # Sonarqube
 .sonarqube/
 WInnovatorTest/coverage.opencover.xml
+
+/WInnovator/wwwroot/lib/jquery-ui

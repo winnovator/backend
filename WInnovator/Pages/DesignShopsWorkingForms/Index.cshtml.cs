@@ -92,6 +92,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 .Include(d => d.DesignShop)
                 .Include(d => d.WorkingForm)
                 .Where(d => d.DesignShop.Id == dsGuid)
+                .OrderBy(d => d.Order)
                 .ToListAsync();
 
         }

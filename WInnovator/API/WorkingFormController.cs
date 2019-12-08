@@ -136,6 +136,33 @@ namespace WInnovator.API
             return listOfImages;
         }
 
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost("reorder")]
+        public ActionResult OnPost([FromForm]String itemIds)
+        {
+            int count = 1;
+            List<Guid> itemList = itemIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToList();
+            foreach (Guid id in itemList)
+            {
+                try
+                {
+                    DesignShopWorkingForm form = _context.DesignShopWorkingForm.Where(dswf => dswf.Id == id).FirstOrDefault();
+                    form.Order = count;
+                    _context.DesignShopWorkingForm.Update(form);
+                    _context.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"An error occurred while changing the order of DesignShopWorkingForm { id } ");
+                    continue;
+                }
+                count++;
+            }
+            return Ok();
+        }
+
+
         private bool DesignShopExists(Guid id)
         {
             return _context.DesignShop.Any(e => e.Id == id);

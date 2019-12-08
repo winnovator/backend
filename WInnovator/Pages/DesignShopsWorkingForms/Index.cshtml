@@ -21,9 +21,10 @@
 </div>
     @if (Model.DesignShopWorkingForm != null)
     {
-    <p>
-        <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Create New</a>
-    </p>
+<p>
+    <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Create New</a> |
+    <a asp-page="Reorder" asp-route-designshopId="@Model.currentDesignShopGuid">Wijzig volgorde</a>
+</p>
     <table class="table">
         <thead>
             <tr>
