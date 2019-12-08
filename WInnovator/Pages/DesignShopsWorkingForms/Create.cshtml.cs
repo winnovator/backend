@@ -43,11 +43,24 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 return Page();
             }
 
+            DesignShopWorkingForm.Order = getCorrectFirstPosition(DesignShopWorkingForm.DesignShopId);
+
             _context.DesignShopWorkingForm.Add(DesignShopWorkingForm);
             await _context.SaveChangesAsync();
 
             TempData["selectedDesignShop"] = DesignShopWorkingForm.DesignShopId;
             return RedirectToPage("./Index");
+        }
+
+        private int getCorrectFirstPosition(Guid designShopId)
+        {
+            // The first position is equal to the highest order + 1, or just 1 if no other workingform is existing
+            var designshop = _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId == designShopId).OrderByDescending(dswf => dswf.Order).FirstOrDefault();
+            if(designshop == null)
+            {
+                return 1;
+            }
+            return designshop.Order + 1;
         }
     }
 }
