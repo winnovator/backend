@@ -19,7 +19,7 @@ namespace WInnovator.Models
         [Required]
         public string Mimetype { get; set; }
         [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy HH:mm:ss}")]      // https://stackoverflow.com/questions/5252979/assign-format-of-datetime-with-data-annotations
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy HH:mm:ss}")]
         public DateTime UploadDateTime { get; set; }
 
         public virtual DesignShopWorkingForm DesignShopWorkingForm { get; set; }
