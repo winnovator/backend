@@ -4,12 +4,15 @@
 
     var messageBanner;
     var token;
+    var currentUser;
+    var currentDesignShop;
     var dropdownDesignShopInitialising;
     var dropdownDesignShopWorkingFormInitialising;
     var callbackArgument;
     var imagesInSelectedWorkingForm;
     var currentImage;
     var numberofImages;
+    var winnovatorURL;
 
     // The initialize function must be run each time a new page is loaded.
     Office.initialize = function (reason) {
@@ -19,13 +22,20 @@
             messageBanner = new components.MessageBanner(element);
             messageBanner.hideBanner();
 
-            // Set the designShops
-            getDesignShops();
+            //winnovatorURL = 'https://localhost:44344';
+            //winnovatorURL = "https://winnovator-acc.owntournament.org";
+            winnovatorURL = "";
 
+            $('#checkcredentials').click(getToken);
+            $('#refreshDesignShops').click(refreshDesignShops);
+            $('#refreshDesignShopWorkingForms').click(refreshDesignShopWorkingForms);
             $('#insert-image').click(insertImage);
             $('#designshop-dropdown').change(function () {
                 if (dropdownDesignShopInitialising == false) {
-                    $('#werkvorm').removeClass('hide');
+                    if ($('#werkvorm').hasClass('hide')) {
+                        $('#werkvorm').removeClass('hide');
+                    }
+                    hideImagesAreas();
                     getDesignShopWorkingForms($(this).val());
                     $('#designshop-dropdown').blur();
                 }
@@ -39,11 +49,35 @@
         });
     };
 
-    function getDesignShops() {
+    function getToken() {
         getTokenWithCallback(getDesignShopsWithToken);
     }
 
-    function getDesignShopsWithToken() {
+    function refreshDesignShops() {
+        if (!($('#werkvorm').hasClass('hide'))) {
+            $('#werkvorm').addClass('hide');
+        }
+        hideImagesAreas();
+        getDesignShopsWithToken();
+    }
+
+    function refreshDesignShopWorkingForms() {
+        if (currentDesignShop != null) {
+            hideImagesAreas();
+            getDesignShopWorkingForms(currentDesignShop);
+        }
+    }
+
+    function getDesignShopsWithToken()
+    {
+        // First stop after retrieving a token. First hide the credentials area (only when not refreshing!)
+        if (!($('#credentialsArea').hasClass('hide'))) {
+            $('#credentialsArea').addClass('hide');
+            $('#showCurrentUser').removeClass('hide');
+            $('#showCurrentUser').html('Ingelogd als <b>' + currentUser + '</b>');
+            $('#designshop').removeClass('hide');
+        }
+
         dropdownDesignShopInitialising = true;
         let dropdown = $('#designshop-dropdown');
 
@@ -56,10 +90,10 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: "/api/DesignShop", success: function (data) {
+            url: winnovatorURL + "/api/DesignShop", success: function (data) {
                 $.each(data, function (key, entry) {
                     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.description));
-                })
+                });
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Error retrieving designshops.");
             }
@@ -68,10 +102,7 @@
     }
 
     function getDesignShopWorkingForms(designshopId) {
-        getTokenWithCallback(getDesignShopWorkingFormsWithToken, designshopId);
-    }
-
-    function getDesignShopWorkingFormsWithToken(designshopId) {
+        currentDesignShop = designshopId;
         dropdownDesignShopWorkingFormInitialising = true;
         let dropdown = $('#designshopworkingform-dropdown');
 
@@ -84,10 +115,10 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: "/api/WorkingForm/" + designshopId, success: function (data) {
+            url: winnovatorURL + "/api/WorkingForm/" + designshopId, success: function (data) {
                 $.each(data, function (key, entry) {
                     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.description));
-                })
+                });
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Error retrieving designshopworkingforms.");
             }
@@ -96,19 +127,15 @@
     }
 
     function getImagesForSelectedWorkingForm(workingformId) {
-        getTokenWithCallback(getImagesForSelectedWorkingFormWithToken, workingformId);
-    }
-
-    function getImagesForSelectedWorkingFormWithToken(workingformId) {
         $.ajax({
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: "/api/WorkingForm/" + workingformId + "/imageList", success: function (data) {
+            url: winnovatorURL + "/api/WorkingForm/" + workingformId + "/imageList", success: function (data) {
                 imagesInSelectedWorkingForm = data;
                 let aantal = imagesInSelectedWorkingForm.length;
-                $('#imagesDescription').html("Voeg " + aantal + " vrije " + ((aantal == 1) ? "pagina" : "pagina's") + " toe en selecteer " + ((aantal == 1) ? "deze." : "de eerste die leeg is.") + " Klik daarna op onderstaande button.")
-                $('#imagesButtontext').html("Voeg <b>" + aantal + "</b> " + ((aantal == 1) ? "afbeelding" : "afbeeldingen") + " toe")
+                $('#imagesDescription').html("Voeg " + aantal + " vrije " + ((aantal == 1) ? "pagina" : "pagina's") + " toe en selecteer " + ((aantal == 1) ? "deze." : "de eerste die leeg is.") + " Klik daarna op onderstaande button.");
+                $('#imagesButtontext').html("Voeg <b>" + aantal + "</b> " + ((aantal == 1) ? "afbeelding" : "afbeeldingen") + " toe");
                 toggleImagesAreas(aantal != 0, aantal == 0);
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Error retrieving designshopworkingforms.");
@@ -131,11 +158,16 @@
         }
     }
 
-    function insertImage() {
-        getTokenWithCallback(insertAllImagesWithToken);
+    function hideImagesAreas() {
+        if (!($('#imagesarea').hasClass('hide'))) {
+            $('#imagesarea').addClass('hide');
+        }
+        if (!($('#noimagesarea').hasClass('hide'))) {
+            $('#noimagesarea').addClass('hide');
+        }
     }
 
-    function insertAllImagesWithToken() {
+    function insertImage() {
         numberofImages = imagesInSelectedWorkingForm.length;
         currentImage = -1;
         processImage();
@@ -154,7 +186,7 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: "/api/DownloadImage/" + imageId, success: function (result) {
+            url: winnovatorURL + "/api/DownloadImage/" + imageId, success: function (result) {
                 insertImageFromBase64String(result);
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Oops, something went wrong.");
@@ -200,16 +232,17 @@
             callbackArgument = arguments[1];
         }
         var credData = {
-            email: 'email',
-            password: 'password'
-        }
+            email: $('#username').val(),
+            password: $('#password').val()
+        };
 
         $.ajax({
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(credData),
             dataType: 'json',
-            url: "/api/Token", success: function (result) {
+            url: winnovatorURL + "/api/Token", success: function (result) {
+                currentUser = result.username + '#';
                 token = result.token;
                 if (callbackArgument == "") {
                     _callback();
@@ -217,23 +250,13 @@
                     _callback(callbackArgument);
                 }
             }, error: function (xhr, status, error) {
-                showNotification("Error retrieving token", "Error retrieving valid token, statuscode: " + xhr.status);
-            }
-        });
-    }
-
-    // PREVIOUS
-    // Reads data from current document selection and displays a notification
-    function getDataFromSelection() {
-        Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
-            function (result) {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                    showNotification('The selected text is:', '"' + result.value + '"');
+                if (xhr.status == 400) {
+                    showNotification("FOUT", "Ongeldige gegevens opgegeven.");
                 } else {
-                    showNotification('Error:', result.error.message);
+                    showNotification("Error retrieving token", "Error retrieving valid token from " + winnovatorURL + ", statuscode: " + xhr.status);
                 }
             }
-        );
+        });
     }
 
     // Helper function for displaying notifications
