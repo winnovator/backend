@@ -15,7 +15,6 @@ using WInnovator.ViewModels;
 
 namespace WInnovator.API
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkingFormController : ControllerBase
@@ -40,6 +39,7 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
         public async Task<ActionResult<List<WorkingFormViewModel>>> GetListOfWorkingForms(Guid designShopId)
         {
             // Check if designshop exists
@@ -72,6 +72,7 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
         public async Task<ActionResult<WorkingFormViewModel>> GetCurrentWorkingFormOfDesignShop(Guid designShopId)
         {
             // Check if designshop exists
@@ -115,6 +116,7 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
         public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid workingFormId)
         {
             // Check if the DesignShopWorkingForm exists
@@ -136,9 +138,9 @@ namespace WInnovator.API
             return listOfImages;
         }
 
-        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("reorder")]
+        [Authorize(Roles = "Administrator,Facilitator")]
         public ActionResult OnPost([FromForm]String itemIds)
         {
             int count = 1;
