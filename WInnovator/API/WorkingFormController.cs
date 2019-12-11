@@ -205,7 +205,7 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("reorder")]
         [Authorize(Roles = "Administrator,Facilitator")]
-        public ActionResult OnPost([FromForm]String itemIds)
+        public ActionResult ChangeOrderOfWorkingForms([FromForm]String itemIds)
         {
             int count = 1;
             List<Guid> itemList = itemIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToList();
