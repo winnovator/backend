@@ -12,8 +12,7 @@
     var imagesInSelectedWorkingForm;
     var currentImage;
     var numberofImages;
-    var winnovatorURL;
-
+    
     // The initialize function must be run each time a new page is loaded.
     Office.initialize = function (reason) {
         $(document).ready(function () {
@@ -22,16 +21,18 @@
             messageBanner = new components.MessageBanner(element);
             messageBanner.hideBanner();
 
-            //winnovatorURL = 'https://localhost:44344';
-            //winnovatorURL = "https://winnovator-acc.owntournament.org";
-            winnovatorURL = "";
-
             $('#checkcredentials').click(getToken);
             $('#refreshDesignShops').click(refreshDesignShops);
+            $('#refreshCurrentDesignShopWorkingForm').click(refreshCurrentWorkingForm);
+            $('#setNextWorkingForm').click(setNextWorkingForm);
             $('#refreshDesignShopWorkingForms').click(refreshDesignShopWorkingForms);
             $('#insert-image').click(insertImage);
             $('#designshop-dropdown').change(function () {
                 if (dropdownDesignShopInitialising == false) {
+                    if ($('#huidigewerkvorm').hasClass('hide')) {
+                        $('#huidigewerkvorm').removeClass('hide');
+                    }
+                    getCurrentWorkingForm($(this).val());
                     if ($('#werkvorm').hasClass('hide')) {
                         $('#werkvorm').removeClass('hide');
                     }
@@ -90,7 +91,7 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: winnovatorURL + "/api/DesignShop", success: function (data) {
+            url: "/api/DesignShop", success: function (data) {
                 $.each(data, function (key, entry) {
                     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.description));
                 });
@@ -99,6 +100,40 @@
             }
         });
         dropdownDesignShopInitialising = false;
+    }
+
+    function getCurrentWorkingForm(designshopId, setNext = false) {
+        var callableUrl = "/api/WorkingForm/" + designshopId + "/current";
+        if (setNext) {
+            callableUrl = "/api/WorkingForm/" + designshopId + "/next";
+        }
+        $.ajax({
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            url: callableUrl, success: function (result) {
+                result.description;
+                $('#currentWorkingForm').html('<b>' + result.description + '</b>');
+            }, error: function (xhr, status, error) {
+                if (xhr.status == 404) {
+                    $('#currentWorkingForm').html('Er is geen huidige werkvorm');
+                } else {
+                    $('#currentWorkingForm').html('Er is een fout opgetreden bij het instellen van de volgende werkvorm');
+                }
+            }
+        });
+    }
+
+    function refreshCurrentWorkingForm() {
+        if (currentDesignShop != null) {
+            getCurrentWorkingForm(currentDesignShop);
+        }
+    }
+
+    function setNextWorkingForm() {
+        if (currentDesignShop != null) {
+            getCurrentWorkingForm(currentDesignShop, true);
+        }
     }
 
     function getDesignShopWorkingForms(designshopId) {
@@ -115,7 +150,7 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: winnovatorURL + "/api/WorkingForm/" + designshopId, success: function (data) {
+            url: "/api/WorkingForm/" + designshopId, success: function (data) {
                 $.each(data, function (key, entry) {
                     dropdown.append($('<option></option>').attr('value', entry.id).text(entry.description));
                 });
@@ -131,7 +166,7 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: winnovatorURL + "/api/WorkingForm/" + workingformId + "/imageList", success: function (data) {
+            url: "/api/WorkingForm/" + workingformId + "/imageList", success: function (data) {
                 imagesInSelectedWorkingForm = data;
                 let aantal = imagesInSelectedWorkingForm.length;
                 $('#imagesDescription').html("Voeg " + aantal + " vrije " + ((aantal == 1) ? "pagina" : "pagina's") + " toe en selecteer " + ((aantal == 1) ? "deze." : "de eerste die leeg is.") + " Klik daarna op onderstaande button.");
@@ -186,7 +221,7 @@
             headers: {
                 'Authorization': 'Bearer ' + token
             },
-            url: winnovatorURL + "/api/DownloadImage/" + imageId, success: function (result) {
+            url: "/api/DownloadImage/" + imageId, success: function (result) {
                 insertImageFromBase64String(result);
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Oops, something went wrong.");
@@ -241,8 +276,8 @@
             contentType: 'application/json',
             data: JSON.stringify(credData),
             dataType: 'json',
-            url: winnovatorURL + "/api/Token", success: function (result) {
-                currentUser = result.username + '#';
+            url: "/api/Token", success: function (result) {
+                currentUser = result.username;
                 token = result.token;
                 if (callbackArgument == "") {
                     _callback();
@@ -253,7 +288,7 @@
                 if (xhr.status == 400) {
                     showNotification("FOUT", "Ongeldige gegevens opgegeven.");
                 } else {
-                    showNotification("Error retrieving token", "Error retrieving valid token from " + winnovatorURL + ", statuscode: " + xhr.status);
+                    showNotification("Error retrieving token", "Error retrieving valid token, statuscode: " + xhr.status);
                 }
             }
         });
