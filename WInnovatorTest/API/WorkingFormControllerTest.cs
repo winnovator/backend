@@ -22,7 +22,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test1_GetListOfAllWorkingFormsWithValidGuid()
+        public async Task Test01_GetListOfAllWorkingFormsWithValidGuid()
         {
             // Setup
             Guid designShopId = _fixture._designShop.Id;
@@ -51,7 +51,7 @@ namespace WInnovatorTest.API
                 dswf = listToCheck[i];
                 Assert.Equal(dswf.Id, wfmv.Id);
                 Assert.Equal(dswf.WorkingForm.Description, wfmv.Description);
-                Assert.Equal(i+1, dswf.Order);
+                Assert.Equal(i + 1, dswf.Order);
                 if (_fixture._currentWorkingForm.Id == wfmv.Id)
                 {
                     currentWorkingFormFound = true;
@@ -64,7 +64,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test1_CheckListWithExpectedList()
+        public async Task Test02_CheckListWithExpectedList()
         {
             // Act
             var result = await _fixture._controller.GetListOfWorkingForms(_fixture._designShop.Id);
@@ -72,7 +72,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test2_GetListOfAllWorkingFormsWithInvalidGuid()
+        public async Task Test03_GetListOfAllWorkingFormsWithInvalidGuid()
         {
             // Act
             var result = await _fixture._controller.GetListOfWorkingForms(new Guid());
@@ -85,7 +85,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test3_GetCurrentWorkingFormOfValidDesignShop()
+        public async Task Test04_GetCurrentWorkingFormOfValidDesignShop()
         {
             // Act
             var result = await _fixture._controller.GetCurrentWorkingFormOfDesignShop(_fixture._designShop.Id);
@@ -100,7 +100,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test4_GetCurrentWorkingFormOfInvalidDesignShop()
+        public async Task Test05_GetCurrentWorkingFormOfInvalidDesignShop()
         {
             // Act
             var result = await _fixture._controller.GetCurrentWorkingFormOfDesignShop(new Guid());
@@ -113,7 +113,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test5_GetCurrentWorkingFormOfInvalidDesignShop()
+        public async Task Test06_GetCurrentWorkingFormOfInvalidDesignShop()
         {
             // Act
             var result = await _fixture._controller.GetCurrentWorkingFormOfDesignShop(_fixture._designShopWithoutWorkingForms.Id);
@@ -124,9 +124,9 @@ namespace WInnovatorTest.API
             // Then, check if the result is a NotFound
             Assert.IsType<NotFoundResult>(firstResult.Result);
         }
-        
+
         [Fact]
-        public async Task Test6_GetListOfImagesOfValidCurrentWorkingForm()
+        public async Task Test07_GetListOfImagesOfValidCurrentWorkingForm()
         {
             // Act
             var result = await _fixture._controller.GetListOfImagesOfWorkingForm(_fixture._currentWorkingForm.Id);
@@ -141,7 +141,7 @@ namespace WInnovatorTest.API
         }
 
         [Fact]
-        public async Task Test7_GetListOfImagesOfInvalidCurrentWorkingForm()
+        public async Task Test08_GetListOfImagesOfInvalidCurrentWorkingForm()
         {
             // Act
             var result = await _fixture._controller.GetListOfImagesOfWorkingForm(new Guid());
@@ -152,6 +152,100 @@ namespace WInnovatorTest.API
             // Then, check if the result is a NotFound
             Assert.IsType<NotFoundResult>(firstResult.Result);
         }
-        
+
+        [Fact]
+        public async Task Test09_TestNextWorkingFormAsCurrentWorkingForm()
+        {
+            // First, check if we get the correct workingform
+            // Act
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShop.Id);
+
+            // Assert
+            // First assert: did we get an actionresult with a list
+            var firstResult = Assert.IsType<ActionResult<WorkingFormViewModel>>(result);
+            // Then, get the list while checking it's a list of WorkingFormViewModels
+            WorkingFormViewModel workingForm = Assert.IsType<WorkingFormViewModel>(firstResult.Value);
+            // Assert that the id of the fourth item is equal to the current WorkingForm
+            Assert.Equal(_fixture._nextWorkingForm.Id, workingForm.Id);
+
+            // The next call should generate a 404 error because the previous call got the last workingform
+            // Act
+            var nextResult = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShop.Id);
+
+            // Assert
+            // First assert: did we get an actionresult with a list
+            var SecondResult = Assert.IsType<ActionResult<WorkingFormViewModel>>(nextResult);
+            // Then, check if the result is a NotFound
+            Assert.IsType<NotFoundResult>(SecondResult.Result);
+
+        }
+
+        [Fact]
+        public async Task Test10_GetNextWorkingFormOfInvalidDesignShop()
+        {
+            // Act
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShopWithoutWorkingForms.Id);
+
+            // Assert
+            // First assert: did we get an actionresult with a list
+            var firstResult = Assert.IsType<ActionResult<WorkingFormViewModel>>(result);
+            // Then, check if the result is a NotFound
+            Assert.IsType<NotFoundResult>(firstResult.Result);
+        }
+
+        [Fact]
+        public async Task Test11_GetNextWorkingFormOfNonExistingDesignShop()
+        {
+            // Act
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(new Guid());
+
+            // Assert
+            // First assert: did we get an actionresult with a list
+            var firstResult = Assert.IsType<ActionResult<WorkingFormViewModel>>(result);
+            // Then, check if the result is a NotFound
+            Assert.IsType<NotFoundResult>(firstResult.Result);
+        }
+
+        [Fact]
+        public async Task Test12_ChangeOrderOfWorkingForms()
+        {
+            string workListAsString;
+            int counter;
+            int numberOfItems;
+            List<DesignShopWorkingForm> workList = await helperGetWorkingForms();
+
+            // first stage: reorder backwards
+            workListAsString = string.Join(",", getIdsAsStringArray(workList.OrderByDescending(dswf=>dswf.Order).ToList()));
+            _fixture._controller.ChangeOrderOfWorkingForms(workListAsString);
+            List<DesignShopWorkingForm> reorderdList = await helperGetWorkingForms();
+            Assert.Equal(workList.Count(), reorderdList.Count());
+            
+            counter = 0;
+            numberOfItems = workList.Count();
+            for (counter = 0; counter < numberOfItems; counter++)
+            {
+                Assert.True(compareValues(workList[numberOfItems - counter - 1], reorderdList[counter], counter + 1));
+            }
+
+        }
+
+        private async Task<List<DesignShopWorkingForm>> helperGetWorkingForms()
+        {
+            return await _fixture._applicationTestDbContext.DesignShopWorkingForm
+                .Where(dswf => dswf.DesignShopId == _fixture._designShop.Id)
+                .OrderBy(dswf => dswf.Order)
+                .ToListAsync();
+        }
+
+        private string[] getIdsAsStringArray(List<DesignShopWorkingForm> workList)
+        {
+            return workList.Select(dswf => dswf.Id.ToString()).ToArray();
+        }
+
+        private bool compareValues(DesignShopWorkingForm original, DesignShopWorkingForm reorderd, int position)
+        {
+            return original.Id == reorderd.Id
+                && reorderd.Order == position;
+        }
     }
 }

@@ -13,6 +13,7 @@ namespace WInnovatorTest.API.Fixtures
         public DesignShop _designShop;
         public DesignShop _designShopWithoutWorkingForms;
         public DesignShopWorkingForm _currentWorkingForm;
+        public DesignShopWorkingForm _nextWorkingForm;
 
         public WorkingFormControllerTestFixture()
         {
@@ -61,17 +62,24 @@ namespace WInnovatorTest.API.Fixtures
             DesignShopWorkingForm designShopWorkingForm;
             // We'll add 5 workingforms to the saved designshop
             // The fourth workingform will act as the current workingform
+            // The fifth workingform will also be saved
             for (var i = 1; i < 6; i++)
             {
                 workingForm = new WorkingForm() {Description = $"Workingform {i}"};
                 _applicationTestDbContext.WorkingForm.Add(workingForm);
                 designShopWorkingForm = new DesignShopWorkingForm()
                     {DesignShop = _designShop, WorkingForm = workingForm, Order = i};
-                if (i == 4)
+                switch (i)
                 {
-                    _currentWorkingForm = designShopWorkingForm;
-                    _currentWorkingForm.IsCurrentWorkingForm = true;
+                    case 4:
+                        _currentWorkingForm = designShopWorkingForm;
+                        _currentWorkingForm.IsCurrentWorkingForm = true;
+                        break;
+                    case 5:
+                        _nextWorkingForm = designShopWorkingForm;
+                        break;
                 }
+
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
             }
 

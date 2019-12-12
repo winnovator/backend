@@ -13,10 +13,12 @@ namespace WInnovator.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required]
+        [Display(Name ="Omschrijving")]
         public string Description { get; set; }
         [Column(TypeName = "datetime2")]
         [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd-MM-yyyy}")]      // https://stackoverflow.com/questions/5252979/assign-format-of-datetime-with-data-annotations
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "Datum")]
         public DateTime Date { get; set; }
         public string AppUseraccount { get; set; }
 
