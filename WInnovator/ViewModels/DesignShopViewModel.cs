@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WInnovator.ViewModels
 {
+    [ExcludeFromCodeCoverage]
     public class DesignShopViewModel
     {
         public Guid Id { get; set; }

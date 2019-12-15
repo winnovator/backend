@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,6 +15,7 @@ using WInnovator.Models;
 
 namespace WInnovator.API
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class UploadImageController : ControllerBase
@@ -39,37 +42,40 @@ namespace WInnovator.API
         /// </summary>
         /// <param name="designShopId">The designshop to which the image belongs</param>
         /// <param name="uploadedFile">The image itself</param>
-        /// <returns>The correct statuscode (202, 400 or 404)</returns>
+        /// <returns>The correct statuscode (202, 400, 401 or 404)</returns>
         [HttpPost("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ImageStore>> PostUploadImageStore(Guid designShopId, [FromForm] IFormFile uploadedFile)
         {
             if (uploadedFile == null)
             {
+                _logger.LogWarning($"Uploaded file is non existing (null), designshopId = { designShopId }");
                 return BadRequest();
             }
 
             // Check if the DesignShop has a current WorkingForm set
-            var currentShop = await _context.DesignShop.Include(shop => shop.CurrentDesignShopWorkingForm)
-                .FirstOrDefaultAsync(shop => shop.Id == designShopId);
-            
-            if (currentShop.CurrentDesignShopWorkingForm == null)
+            var dswf = await _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId==designShopId && dswf.IsCurrentWorkingForm == true).FirstOrDefaultAsync();
+
+            if (dswf == null)
             {
                 // There's no workingform set, return 404 Not Found
+                _logger.LogWarning($"File uploaded for designshop { designShopId }, but there's no current workingform.");
                 return NotFound();
             }
 
             if (!contentHasImageMimetype(uploadedFile.ContentType) ||
                 !contentHasImageExtension(Path.GetExtension(uploadedFile.FileName)))
             {
+                _logger.LogWarning($"File uploaded for designshop { designShopId } has an invalid mimetype or extension.");
                 return BadRequest();
             }
 
             var imageStore = new ImageStore
             {
-                DesignShopWorkingForm = currentShop.CurrentDesignShopWorkingForm,
+                DesignShopWorkingForm = dswf,
                 Mimetype = uploadedFile.ContentType,
                 UploadDateTime = DateTime.Now
             };

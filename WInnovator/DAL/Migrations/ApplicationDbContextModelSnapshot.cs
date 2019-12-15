@@ -43,7 +43,7 @@ namespace WInnovator.Data.Migrations
                         .HasName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("IdentityRole");
+                    b.ToTable("AspNetRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -67,7 +67,7 @@ namespace WInnovator.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityRoleClaim<string>");
+                    b.ToTable("AspNetRoleClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -132,7 +132,7 @@ namespace WInnovator.Data.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("IdentityUser");
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -156,7 +156,7 @@ namespace WInnovator.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserClaim<string>");
+                    b.ToTable("AspNetUserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -180,7 +180,7 @@ namespace WInnovator.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserLogin<string>");
+                    b.ToTable("AspNetUserLogins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -195,7 +195,7 @@ namespace WInnovator.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityUserRole<string>");
+                    b.ToTable("AspNetUserRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -216,7 +216,7 @@ namespace WInnovator.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("IdentityUserToken<string>");
+                    b.ToTable("AspNetUserTokens");
                 });
 
             modelBuilder.Entity("WInnovator.Models.DesignShop", b =>
@@ -225,23 +225,17 @@ namespace WInnovator.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CurrentDesignShopWorkingFormId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("AppUseraccount")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("DesignShopWorkingForm")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("DesignShopWorkingForm")
-                        .IsUnique()
-                        .HasFilter("[DesignShopWorkingForm] IS NOT NULL");
 
                     b.ToTable("DesignShop");
                 });
@@ -254,6 +248,9 @@ namespace WInnovator.Data.Migrations
 
                     b.Property<Guid>("DesignShopId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCurrentWorkingForm")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -361,13 +358,6 @@ namespace WInnovator.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("WInnovator.Models.DesignShop", b =>
-                {
-                    b.HasOne("WInnovator.Models.DesignShopWorkingForm", "CurrentDesignShopWorkingForm")
-                        .WithOne("IsCurrentWorkingForm")
-                        .HasForeignKey("WInnovator.Models.DesignShop", "DesignShopWorkingForm");
                 });
 
             modelBuilder.Entity("WInnovator.Models.DesignShopWorkingForm", b =>

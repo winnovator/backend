@@ -11,7 +11,9 @@ namespace WInnovatorTest.API.Fixtures
         public ILogger<WorkingFormController> _logger;
         public WorkingFormController _controller;
         public DesignShop _designShop;
+        public DesignShop _designShopWithoutWorkingForms;
         public DesignShopWorkingForm _currentWorkingForm;
+        public DesignShopWorkingForm _nextWorkingForm;
 
         public WorkingFormControllerTestFixture()
         {
@@ -41,6 +43,10 @@ namespace WInnovatorTest.API.Fixtures
             _designShop = new DesignShop();
             _applicationTestDbContext.DesignShop.Add(_designShop);
 
+            // And one without any workingforms
+            _designShopWithoutWorkingForms = new DesignShop();
+            _applicationTestDbContext.DesignShop.Add(_designShopWithoutWorkingForms);
+
             // And throw in another empty designshops
             for (var i = 0; i < 6; i++)
             {
@@ -56,17 +62,24 @@ namespace WInnovatorTest.API.Fixtures
             DesignShopWorkingForm designShopWorkingForm;
             // We'll add 5 workingforms to the saved designshop
             // The fourth workingform will act as the current workingform
+            // The fifth workingform will also be saved
             for (var i = 1; i < 6; i++)
             {
                 workingForm = new WorkingForm() {Description = $"Workingform {i}"};
                 _applicationTestDbContext.WorkingForm.Add(workingForm);
                 designShopWorkingForm = new DesignShopWorkingForm()
                     {DesignShop = _designShop, WorkingForm = workingForm, Order = i};
-                if (i == 4)
+                switch (i)
                 {
-                    _currentWorkingForm = designShopWorkingForm;
-                    _designShop.CurrentDesignShopWorkingForm = _currentWorkingForm;
+                    case 4:
+                        _currentWorkingForm = designShopWorkingForm;
+                        _currentWorkingForm.IsCurrentWorkingForm = true;
+                        break;
+                    case 5:
+                        _nextWorkingForm = designShopWorkingForm;
+                        break;
                 }
+
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
             }
 

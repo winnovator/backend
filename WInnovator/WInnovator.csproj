@@ -8,21 +8,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DAL\Migrations\20191023101020_Deletion of wrong one-to-one relationship.cs" />
+    <Compile Remove="DAL\Migrations\20191023101020_Deletion of wrong one-to-one relationship.Designer.cs" />
     <Compile Remove="Data\Migrations\20191002170757_Adding DesignShop and UploadImage functionality.cs" />
     <Compile Remove="Data\Migrations\20191002170757_Adding DesignShop and UploadImage functionality.Designer.cs" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.0.1">
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.0.0" />
+    <PackageReference Include="GitVersionTask" Version="5.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="jQuery.UI.Combined" Version="1.12.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.3.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,6 +42,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
+    <PackageReference Include="PasswordGenerator" Version="2.0.1" />
     <PackageReference Include="QRCoder" Version="1.3.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
@@ -57,7 +64,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Remove="Resources\WInnovator logo.png" />
     <None Remove="Resources\WInnovator wit.png" />
+    <EmbeddedResource Include="Resources\WInnovator logo.png" />
     <EmbeddedResource Include="Resources\WInnovator wit.png" />
   </ItemGroup>
 

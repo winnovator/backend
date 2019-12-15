@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>WInnovator Add-In</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <script src="Scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="Scripts/MessageBanner.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+    <!-- To enable offline debugging using a local reference to Office.js, use:  -->
+    <!--<script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>
+    <script src="Scripts/Office/1/office.js" type="text/javascript"></script>-->
+
+    <script src="Home.js" type="text/javascript"></script>
+    <link href="Home.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/Button.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/MessageBanner.css" rel="stylesheet" type="text/css" />
+
+
+    <!-- For Office UI Fabric Core, go to https://aka.ms/office-ui-fabric to learn more. -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.0/css/fabric.min.css">
+
+    <!-- To enable the offline use of Office UI Fabric Core, use: -->
+    <!--<link rel="stylesheet" href="Content/fabric.min.css"-->
+
+    <!-- Office UI Fabric JS and it's components are no longer actively supported. Please see https://aka.ms/PnP-OfficeFabricReact for recommended Patterns and Practices -->
+    <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css">
+</head>
+
+
+<body class="ms-Fabric" dir="ltr">
+    <div class="header" ms-Grid ms-bgColor-themeSecondary>
+        <div class="ms-Grid ms-bgColor-themeSecondary">
+            <div class="ms-Grid-row">
+                <div class="logo" />
+                <!--<div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12"> <div class="ms-font-xl ms-fontColor-white"> </div></div>-->
+            </div>
+        </div>
+    </div>
+    <div id="content-main">
+        <div class="padding">
+            <div id="credentialsArea">
+                <p>
+                    <span class="ms-font-xxl ms-fontColor-themePrimary ms-fontWeight-bold">Hallo. </span>
+                    <span class="ms-font-m-plus ms-fontColor-neutralDark">Wat is uw gebruikersnaam en wachtwoord?</span>
+                </p>
+                <div class="ms-Grid">
+                    <div class="ms-Grid-row">
+                        <div class="ms-TextField">
+                            <label class="ms-Label">Gebruikersnaam</label>
+                            <input class="ms-TextField-field" id="username" type="text" value="" placeholder="Geef uw gebruikersnaam in">
+                        </div>
+                    </div>
+                </div>
+                <div class="ms-Grid">
+                    <div class="ms-Grid-row">
+                        <div class="ms-TextField">
+                            <label class="ms-Label">Wachtwoord</label>
+                            <input class="ms-TextField-field" id="password" type="password" value="" placeholder="Geef uw gebruikersnaam in">
+                        </div>
+                    </div>
+                </div>
+                <button class="Button Button--primary" id="checkcredentials">
+                    <span class="Button-description">Login</span>
+                </button>
+            </div>
+            <div id="showCurrentUser" class="hide">
+            </div>
+            <div id="designshop" class="hide">
+                <p>
+                    <span class="ms-font-xxl ms-fontColor-themePrimary ms-fontWeight-bold">1. </span>
+                    <span class="ms-font-m-plus ms-fontColor-neutralDark">Selecteer een designshop:</span>
+                    <em class="ms-font-m-plus ms-fontColor-neutralSecondary ms-Icon ms-Icon--Refresh" aria-hidden="true" id="refreshDesignShops"></em>
+                </p>
+                <div id="componentWrapperDesignShop">
+                    <select id="designshop-dropdown" class="ms-Dropdown">
+                    </select>
+                </div>
+            </div>
+            <div id="huidigewerkvorm" class="hide">
+                <p>
+                    <span class="ms-font-m-plus ms-fontColor-neutralDark">Huidige werkvorm:</span>
+                    <em class="ms-font-m-plus ms-fontColor-neutralSecondary ms-Icon ms-Icon--Refresh" aria-hidden="true" id="refreshCurrentDesignShopWorkingForm"></em>
+                </p>
+                <p>
+                    <div id="currentWorkingForm">
+                    </div>
+                </p>
+                <button class="Button Button--primary" id="setNextWorkingForm">
+                    <span class="Button-description">Stel volgende werkvorm in als actief</span>
+                </button>
+            </div>
+            <div id="werkvorm" class="hide">
+                <p>
+                    <span class="ms-font-xxl ms-fontColor-themePrimary ms-fontWeight-bold">2. </span>
+                    <span class="ms-font-m-plus ms-fontColor-neutralDark">Selecteer een werkvorm:</span>
+                    <em class="ms-font-m-plus ms-fontColor-neutralSecondary ms-Icon ms-Icon--Refresh" aria-hidden="true" id="refreshDesignShopWorkingForms"></em>
+                </p>
+                <div id="componentWrapperDesignShopWorkingForm">
+                    <select id="designshopworkingform-dropdown" class="ms-Dropdown">
+                    </select>
+                </div>
+            </div>
+            <div id="imagesarea" class="hide">
+                <p>
+                    <span class="ms-font-xxl ms-fontColor-themePrimary ms-fontWeight-bold">3. </span>
+                    <span id="imagesDescription" class="ms-font-m-plus ms-fontColor-neutralDark">placeholder.</span>
+                </p>
+                <button class="Button Button--primary" id="insert-image">
+                    <span class="Button-icon"><em class="ms-Icon--Photo2Add"></em></span>
+                    <span id="imagesButtontext" class="Button-label">Insert Image</span>
+                    <span class="Button-description">Gets the photo of the day that shows on the Bing home page and adds it to the slide.</span>
+                </button>
+            </div>
+            <div id="noimagesarea" class="hide">
+                <p class="ms-font-xl ms-fontColor-alert ms-fontWeight-bold">Geen afbeeldingen aanwezig</p>
+            </div>
+        </div>
+
+        <!-- Component used for displaying notifications -->
+        <div class="MessageBanner" id="notification-popup">
+            <div class="MessageBanner-content">
+                <div class="MessageBanner-text">
+                    <div class="MessageBanner-clipper">
+                        <div class="ms-font-m-plus ms-fontWeight-semibold" id="notification-header"></div>
+                        <div class="ms-font-m ms-fontWeight-semilight" id="notification-body"></div>
+                    </div>
+                </div>
+                <button class="MessageBanner-expand" style="display:none"><em class="ms-Icon ms-Icon--chevronsDown"></em> </button>
+                <div class="MessageBanner-action"></div>
+            </div>
+            <button class="MessageBanner-close"> <em class="ms-Icon ms-Icon--ChromeClose"></em> </button>
+        </div>
+    </div>
+</body>
+</html>

@@ -68,10 +68,11 @@ namespace WInnovatorTest.API.Fixtures
                 designShopWorkingForm = new DesignShopWorkingForm()
                     {DesignShop = _designShopWithCurrentWorkingForm, WorkingForm = workingForm, Order = i};
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
-                if (i == 4) _currentWorkingForm = designShopWorkingForm;
+                if (i == 4) { 
+                    _currentWorkingForm = designShopWorkingForm;
+                    _currentWorkingForm.IsCurrentWorkingForm = true;
+                }
             }
-
-            _designShopWithCurrentWorkingForm.CurrentDesignShopWorkingForm = _currentWorkingForm;
 
             _applicationTestDbContext.SaveChanges();
         }

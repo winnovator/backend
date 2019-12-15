@@ -1,22 +1,31 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using WInnovator.Data;
+using WInnovator.Helper;
+using WInnovator.Interfaces;
 
 namespace WInnovator
 {
     [ExcludeFromCodeCoverage]
     public class Startup
     {
+        public IConfiguration Configuration { get; }
         private readonly bool isProduction;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
@@ -25,19 +34,40 @@ namespace WInnovator
             isProduction = env.IsProduction();
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // TODO: UPDATE IDENTITYUSER TO OUR OWN USE
+            // See https://docs.microsoft.com/en-us/aspnet/core/security/authentication/customize-identity-model?view=aspnetcore-3.0
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddTransient<IUserIdentityHelper, UserIdentityHelper>();
+
             // Add authentication via Google and Twitter
-            services.AddAuthentication();
+            services.AddAuthentication(options =>
+                {
+                    //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                    };
+                });
+
+            services.AddAuthorization();
 
             // We currently don't have a valid usecase for Google and/or Twitter authentication, so we're gonna disable it for this moment.
 
@@ -62,7 +92,13 @@ namespace WInnovator
                 //});
 
             services.AddRazorPages();
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             // per https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.0&tabs=visual-studio
@@ -74,11 +110,42 @@ namespace WInnovator
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
+                
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference 
+                            { 
+                                Type = ReferenceType.SecurityScheme, 
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+ 
+                    }
+                });            
             });
+
+            // See https://medium.com/it-dead-inside/implementing-health-checks-for-asp-net-core-a-deep-dive-85a327be9a75 for adding additional checks
+            // https://github.com/xabaril/AspNetCore.Diagnostics.HealthChecks
+            //services.AddHealthChecks();
+            services.AddHealthChecks()
+                .AddSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
         {
             if (!isProduction)
             {
@@ -104,6 +171,12 @@ namespace WInnovator
                 app.UseExceptionHandler("/Error");
             }
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+            );
+
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -115,7 +188,49 @@ namespace WInnovator
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHealthChecks("/health");
             });
+
+            CreateRoles(userIdentityHelper).Wait();
+            createUsersIfNonexisting(userIdentityHelper).Wait();
+            addRolesToDefaultUsers(serviceProvider, userIdentityHelper).Wait();
+        }
+
+        private async Task CreateRoles(IUserIdentityHelper userIdentityHelper)
+        {
+            foreach (string roleName in DefaultUsersAndRoles.getRoles())
+            {
+                await userIdentityHelper.CreateRoleIfNonExistent(roleName);
+            }
+        }
+
+        private async Task createUsersIfNonexisting(IUserIdentityHelper userIdentityHelper)
+        {
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
+            {
+                await userIdentityHelper.CreateConfirmedUserIfNonExistent(userData.email, userData.password);
+            }
+        }
+
+        private async Task addRolesToDefaultUsers(IServiceProvider serviceProvider, IUserIdentityHelper userIdentityHelper)
+        {
+            var _logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+
+            foreach (UserData userData in DefaultUsersAndRoles.getDefaultUsers())
+            {
+                // Does the user exist?
+                if((await userIdentityHelper.SearchUser(userData.email)).Exists())
+                {
+                    foreach (string roleName in userData.defaultRoles)
+                    {
+                        await userIdentityHelper.AddRoleToUser(userData.email, roleName);
+                    }
+                } else
+                {
+                    // No, create error in log!
+                    _logger.LogError($"Error, cannot add roles to user { userData.email }, user doesn't exist!");
+                }
+            }
         }
     }
 }

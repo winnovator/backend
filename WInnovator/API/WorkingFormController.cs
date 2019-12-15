@@ -1,12 +1,14 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WInnovator.Data;
 using WInnovator.Models;
 using WInnovator.ViewModels;
@@ -34,17 +36,18 @@ namespace WInnovator.API
         /// <returns>A list of WorkingFormViewModels</returns>
         [HttpGet("{designShopId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
         public async Task<ActionResult<List<WorkingFormViewModel>>> GetListOfWorkingForms(Guid designShopId)
         {
             // Check if designshop exists
             if (!DesignShopExists(designShopId))
             {
-                _logger.LogError($"Unknown designshop, asked for id {designShopId}");
+                _logger.LogWarning($"Unknown designshop, asked for id {designShopId}");
                 return NotFound();
             }
-
-            _logger.LogTrace($"Searching workingforms for designshop id {designShopId}");
 
             IEnumerable<DesignShopWorkingForm> list = await _context.DesignShopWorkingForm
                 .Where(dswf => dswf.DesignShopId == designShopId)
@@ -66,33 +69,33 @@ namespace WInnovator.API
         /// <returns>WorkingFormModelView of the current workingform</returns>
         [HttpGet("{designShopId}/current")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
         public async Task<ActionResult<WorkingFormViewModel>> GetCurrentWorkingFormOfDesignShop(Guid designShopId)
         {
             // Check if designshop exists
             if (!DesignShopExists(designShopId))
             {
-                _logger.LogError($"Unknown designshop, asked for id {designShopId}");
+                _logger.LogWarning($"Unknown designshop, asked for id {designShopId}");
                 return NotFound();
             }
 
             _logger.LogTrace($"Searching current workingform for designshop id {designShopId}.");
 
-            DesignShop shop = await _context.DesignShop
-                .Where(shop => shop.Id == designShopId)
-                .Include(shop => shop.CurrentDesignShopWorkingForm)
-                .ThenInclude(wf => wf.WorkingForm)
-                .FirstOrDefaultAsync();
+            DesignShopWorkingForm dswf = await getCurrentWorkingFormForDesignShop(designShopId);
 
             var currentWorkingForm = new WorkingFormViewModel();
-            if (shop == null)
+            if (dswf == null)
             {
-                _logger.LogTrace($"Designshop with id {designShopId} doesn't have a current workingform.'");
+                _logger.LogWarning($"Designshop with id {designShopId} doesn't have a current workingform.'");
+                return NotFound();
             }
             else
             {
                 currentWorkingForm = new WorkingFormViewModel()
-                    {Id = shop.CurrentDesignShopWorkingForm.Id, Description = shop.CurrentDesignShopWorkingForm.WorkingForm.Description};
+                    {Id = dswf.Id, Description = dswf.WorkingForm.Description};
                 _logger.LogTrace(
                     $"Designshop with id {designShopId} has workingform with id {currentWorkingForm.Id} as active workingform.");
             }
@@ -101,34 +104,136 @@ namespace WInnovator.API
         }
 
         /// <summary>
-        /// Returns a list of all images belonging to the specified DesignShopWorkingForm
+        /// Sets the next workingform of the specified designshop
         /// </summary>
-        /// <param name="dswfId">guid of the specified DesignShopWorkingForm</param>
-        /// <returns>A list of DownloadImageViewModels</returns>
-        [HttpGet("{workingFormId}/imageList")]
+        /// <param name="designShopId">guid of the designshop</param>
+        /// <returns>WorkingFormModelView of the next workingform</returns>
+        [HttpGet("{designShopId}/next")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid dswfId)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
+        public async Task<ActionResult<WorkingFormViewModel>> SetNextWorkingFormOfDesignShop(Guid designShopId)
         {
-            // Check if the DesignShopWorkingForm exists
-            if (!DesignShopWorkingFormExists(dswfId))
+            int currentInOrder = 0;
+
+            // Check if designshop exists
+            if (!DesignShopExists(designShopId))
             {
-                _logger.LogError($"Unknown DesignShopWorkingForm, asked for id {dswfId}");
+                _logger.LogWarning($"Unknown designshop, asked for id {designShopId}");
                 return NotFound();
             }
 
-            _logger.LogTrace($"Searching for images belonging to DesignShopWorkingForm with id {dswfId}.");
+            _logger.LogTrace($"Searching current workingform for designshop id {designShopId}.");
+
+            DesignShopWorkingForm dswf = await getCurrentWorkingFormForDesignShop(designShopId);
+
+            if (dswf != null)
+            {
+                // Remember ordernumber of current workingform and update it so it isn't current anymore
+                currentInOrder = dswf.Order;
+                dswf.IsCurrentWorkingForm = false;
+                _context.DesignShopWorkingForm.Update(dswf);
+                await _context.SaveChangesAsync();
+            }
+
+            // Get the next
+            dswf = await _context.DesignShopWorkingForm
+                .Where(dswf => dswf.DesignShopId == designShopId && dswf.Order > currentInOrder)
+                .Include(dswf => dswf.WorkingForm)
+                .OrderBy(dswf => dswf.Order)
+                .FirstOrDefaultAsync();
+
+            if(dswf != null)
+            {
+                // Set the found workingform as current
+                dswf.IsCurrentWorkingForm = true;
+                _context.DesignShopWorkingForm.Update(dswf);
+                await _context.SaveChangesAsync();
+            }
+
+            var currentWorkingForm = new WorkingFormViewModel();
+            if (dswf == null)
+            {
+                _logger.LogWarning($"Designshop with id {designShopId} doesn't have a current workingform.'");
+                return NotFound();
+            }
+            else
+            {
+                currentWorkingForm = new WorkingFormViewModel()
+                { Id = dswf.Id, Description = dswf.WorkingForm.Description };
+                _logger.LogTrace(
+                    $"Designshop with id {designShopId} now has workingform with id {currentWorkingForm.Id} as active workingform.");
+            }
+
+            return currentWorkingForm;
+        }
+
+        /// <summary>
+        /// Returns a list of all images belonging to the specified DesignShopWorkingForm
+        /// </summary>
+        /// <param name="workingFormId">guid of the specified DesignShopWorkingForm</param>
+        /// <returns>A list of DownloadImageViewModels</returns>
+        [HttpGet("{workingFormId}/imageList")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
+        public async Task<ActionResult<List<DownloadImageViewModel>>> GetListOfImagesOfWorkingForm(Guid workingFormId)
+        {
+            // Check if the DesignShopWorkingForm exists
+            if (!DesignShopWorkingFormExists(workingFormId))
+            {
+                _logger.LogWarning($"Unknown DesignShopWorkingForm, asked for id {workingFormId}");
+                return NotFound();
+            }
 
             DesignShopWorkingForm designShopWorkingForm = await _context.DesignShopWorkingForm
-                .Where(dswf => dswf.Id == dswfId)
+                .Where(dswf => dswf.Id == workingFormId)
                 .Include(dswf => dswf.UploadedImages)
                 .FirstOrDefaultAsync();
 
             var listOfImages = designShopWorkingForm.UploadedImages.Select(image => new DownloadImageViewModel()
                 {Id = image.Id, DateTime = image.UploadDateTime}).ToList();
 
-            _logger.LogTrace($"Found {listOfImages.Count} images for DesignShopWorkingForm with id {dswfId}");
+            _logger.LogTrace($"Found {listOfImages.Count} images for DesignShopWorkingForm with id {workingFormId}");
             return listOfImages;
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost("reorder")]
+        [Authorize(Roles = "Administrator,Facilitator")]
+        public ActionResult ChangeOrderOfWorkingForms([FromForm]String itemIds)
+        {
+            int count = 1;
+            List<Guid> itemList = itemIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => Guid.Parse(s)).ToList();
+            foreach (Guid id in itemList)
+            {
+                try
+                {
+                    DesignShopWorkingForm form = _context.DesignShopWorkingForm.Where(dswf => dswf.Id == id).FirstOrDefault();
+                    form.Order = count;
+                    _context.DesignShopWorkingForm.Update(form);
+                    _context.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"An error occurred while changing the order of DesignShopWorkingForm { id }. Stacktrace:\n" + e.StackTrace.ToString());
+                    continue;
+                }
+                count++;
+            }
+            return Ok();
+        }
+
+        private async Task<DesignShopWorkingForm> getCurrentWorkingFormForDesignShop(Guid designShopId)
+        {
+            return await _context.DesignShopWorkingForm
+                .Where(dswf => dswf.DesignShopId == designShopId && dswf.IsCurrentWorkingForm == true)
+                .Include(dswf => dswf.WorkingForm)
+                .FirstOrDefaultAsync();
         }
 
         private bool DesignShopExists(Guid id)
