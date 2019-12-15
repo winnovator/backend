@@ -61,7 +61,13 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 await GetWorkingForms(selected.Id);
             }
 
-            DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description), selected.Id);
+            if (selected != null)
+            {
+                DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description), selected.Id);
+            } else
+            {
+                DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()
