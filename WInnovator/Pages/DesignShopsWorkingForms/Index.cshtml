@@ -43,6 +43,9 @@
                             @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].WorkingForm)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].TimeAllocated)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].Order)
                         </th>
                         <th>
@@ -54,25 +57,28 @@
                 <tbody>
                     @foreach (var item in Model.DesignShopWorkingForm)
                     {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.DesignShop.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.WorkingForm.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Order)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.IsCurrentWorkingForm)
-                            </td>
-                            <td>
-                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DesignShop.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.WorkingForm.Description)
+                        </td>
+                        <td>
+                            @TimeSpan.FromMinutes(item.TimeAllocated).ToString(@"hh\:mm")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Order)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsCurrentWorkingForm)
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

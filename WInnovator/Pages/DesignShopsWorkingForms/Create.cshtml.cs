@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WInnovator.Helper;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.DesignShopsWorkingForms
@@ -17,32 +18,89 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     public class CreateModel : PageModel
     {
         private readonly WInnovator.Data.ApplicationDbContext _context;
+        public SelectList WorkingForms { get; set; }
+        public Guid? currentWorkingFormId { get; set; }
+        [BindProperty]
+        public IEnumerable<SelectListItem> CurrentWorkingForm { get; set; }
+        [BindProperty]
+        public DesignShopWorkingForm DesignShopWorkingForm { get; set; }
+        public Guid currentDesignShop { get; set; }
 
         public CreateModel(WInnovator.Data.ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IActionResult OnGet(Guid? designshopId)
+        public IActionResult OnGet(Guid designshopId)
         {
+            currentDesignShop = designshopId;
             // Only the current designshop can be selected, no changes can be made!
-            ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == designshopId), "Id", "Description");
-            ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Description");
+            //ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == designshopId), "Id", "Description");
+            //WorkingForms = new SelectList(_context.WorkingForm, "Id", "Description");
+
+            LoadItems();
+            DesignShopWorkingForm = new DesignShopWorkingForm();
+            //DesignShopWorkingForm.TimeAllocated = 1;
+
+            if (WorkingForms.Count() > 0)
+            {
+                Guid guid = Guid.Parse(WorkingForms.ElementAt(0).Value);
+                WorkingForm workingForm = _context.WorkingForm.Where(wf => wf.Id == guid).FirstOrDefault();
+                if (workingForm != null)
+                {
+                    DesignShopWorkingForm.TimeAllocated = workingForm.DefaultTimeNeeded;
+                    DesignShopWorkingForm.Content = workingForm.Content;
+                }
+            }
             return Page();
         }
 
-        [BindProperty]
-        public DesignShopWorkingForm DesignShopWorkingForm { get; set; }
+        // Gets called when the user selects a workingform
+        public IActionResult OnPost()
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    return Page();
+            //}
 
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+            try
+            {
+                currentDesignShop = Guid.Parse(ModelState["DesignShopWorkingForm.DesignShopId"].AttemptedValue);
+                currentWorkingFormId = Guid.Parse(ModelState["CurrentWorkingForm"].AttemptedValue);
+                WorkingForm currentWorkingForm = _context.WorkingForm.Where(wf => wf.Id == currentWorkingFormId).FirstOrDefault();
+                if (currentWorkingForm != null)
+                {
+                    // Set the content from the workingform as the content for this designshopworkingform
+                    ModelState.SetModelValue("DesignShopWorkingForm.Content", new ValueProviderResult(currentWorkingForm.Content, CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.TimeAllocated", new ValueProviderResult(currentWorkingForm.DefaultTimeNeeded.ToString(), CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    // This normally can't happen, but just be very sure
+                    currentWorkingFormId = null;
+                }
+
+                LoadItems();
+
+                return Page();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        public async Task<IActionResult> OnPostCreateAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+            // Sets the selected workingform
+            DesignShopWorkingForm.WorkingFormId = Guid.Parse(ModelState["CurrentWorkingForm"].AttemptedValue);
+
+            // Get the order to put it in
             DesignShopWorkingForm.Order = getCorrectFirstPosition(DesignShopWorkingForm.DesignShopId);
 
             _context.DesignShopWorkingForm.Add(DesignShopWorkingForm);
@@ -52,11 +110,25 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             return RedirectToPage("./Index");
         }
 
+        private void LoadItems()
+        {
+            // Only the current designshop can be selected, no changes can be made!
+            ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == currentDesignShop), "Id", "Description");
+            if (currentWorkingFormId != null)
+            {
+                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Description", currentWorkingFormId);
+            }
+            else
+            {
+                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Description");
+            }
+        }
+
         private int getCorrectFirstPosition(Guid designShopId)
         {
             // The first position is equal to the highest order + 1, or just 1 if no other workingform is existing
             var designshop = _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId == designShopId).OrderByDescending(dswf => dswf.Order).FirstOrDefault();
-            if(designshop == null)
+            if (designshop == null)
             {
                 return 1;
             }

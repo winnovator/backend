@@ -18,6 +18,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.WorkingForm[0].Description)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkingForm[0].DefaultTimeNeeded)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -26,6 +29,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @TimeSpan.FromMinutes(item.DefaultTimeNeeded).ToString(@"hh\:mm")
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

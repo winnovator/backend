@@ -5,11 +5,15 @@
     <UserSecretsId>aspnet-WInnovator-431AF958-23AD-455F-A7A6-BAA15F5DD614</UserSecretsId>
     <DebugType>Full</DebugType>
     <ProjectGuid>{17afa6d9-ba66-4ba1-9cc5-34ba50d67f46}</ProjectGuid>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="DAL\Migrations\20191023101020_Deletion of wrong one-to-one relationship.cs" />
     <Compile Remove="DAL\Migrations\20191023101020_Deletion of wrong one-to-one relationship.Designer.cs" />
+    <Compile Remove="DAL\Migrations\20191218102537_content.cs" />
+    <Compile Remove="DAL\Migrations\20191218102537_content.Designer.cs" />
     <Compile Remove="Data\Migrations\20191002170757_Adding DesignShop and UploadImage functionality.cs" />
     <Compile Remove="Data\Migrations\20191002170757_Adding DesignShop and UploadImage functionality.Designer.cs" />
   </ItemGroup>
