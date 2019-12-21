@@ -50,13 +50,13 @@ namespace WInnovatorTest.API
                 wfmv = theList[i];
                 dswf = listToCheck[i];
                 Assert.Equal(dswf.Id, wfmv.Id);
-                Assert.Equal(dswf.WorkingForm.Description, wfmv.Description);
+                Assert.Equal(dswf.WorkingForm.Name, wfmv.Name);
                 Assert.Equal(i + 1, dswf.Order);
                 if (_fixture._currentWorkingForm.Id == wfmv.Id)
                 {
                     currentWorkingFormFound = true;
                     //Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.Id, wfmv.Id);
-                    //Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.WorkingForm.Description, wfmv.Description);
+                    //Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.WorkingForm.Name, wfmv.Name);
                     //Assert.Equal(_fixture._designShop.CurrentDesignShopWorkingForm.Id, dswf.Id);
                 }
             }

@@ -65,7 +65,7 @@ namespace WInnovatorTest.API.Fixtures
             // The fifth workingform will also be saved
             for (var i = 1; i < 6; i++)
             {
-                workingForm = new WorkingForm() {Description = $"Workingform {i}"};
+                workingForm = new WorkingForm() {Name = $"Workingform {i}"};
                 _applicationTestDbContext.WorkingForm.Add(workingForm);
                 designShopWorkingForm = new DesignShopWorkingForm()
                     {DesignShop = _designShop, WorkingForm = workingForm, Order = i};
