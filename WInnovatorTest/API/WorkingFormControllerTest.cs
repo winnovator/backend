@@ -50,7 +50,7 @@ namespace WInnovatorTest.API
                 wfmv = theList[i];
                 dswf = listToCheck[i];
                 Assert.Equal(dswf.Id, wfmv.Id);
-                Assert.Equal(dswf.WorkingForm.Name, wfmv.Description);
+                Assert.Equal(dswf.WorkingForm.Name, wfmv.Name);
                 Assert.Equal(i + 1, dswf.Order);
                 if (_fixture._currentWorkingForm.Id == wfmv.Id)
                 {
