@@ -63,7 +63,7 @@ namespace WInnovatorTest.API.Fixtures
             // The fourth workingform will act as the current workingform
             for (var i = 1; i < 6; i++)
             {
-                workingForm = new WorkingForm() {Description = $"Workingform {i}"};
+                workingForm = new WorkingForm() {Name = $"Workingform {i}"};
                 _applicationTestDbContext.WorkingForm.Add(workingForm);
                 designShopWorkingForm = new DesignShopWorkingForm()
                     {DesignShop = _designShopWithCurrentWorkingForm, WorkingForm = workingForm, Order = i};

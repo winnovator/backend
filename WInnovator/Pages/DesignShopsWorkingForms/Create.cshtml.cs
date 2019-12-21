@@ -27,7 +27,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         {
             // Only the current designshop can be selected, no changes can be made!
             ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == designshopId), "Id", "Description");
-            ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Description");
+            ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Name");
             return Page();
         }
 

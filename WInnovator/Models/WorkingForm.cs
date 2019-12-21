@@ -13,7 +13,7 @@ namespace WInnovator.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required]
-        public string Description { get; set; }
+        public string Name { get; set; }
         
         public virtual ICollection<DesignShopWorkingForm> DesignShopWorkingForms { get; set; }
     }
