@@ -13,8 +13,8 @@ namespace WInnovator.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         [Required(ErrorMessage ="Geef een omschrijving van de werkvorm op")]
-        [Display(Name ="Omschrijving")]
-        public string Description { get; set; }
+        [Display(Name ="Werkvorm naam")]
+        public string Name { get; set; }
         [Required]
         [Range(1, 300, ErrorMessage = "Geef een waarde in minuten op, minimaal 1 minuut en maximaal 300 minuten")]
         [Display(Name = "Standaard tijd benodigd")]
