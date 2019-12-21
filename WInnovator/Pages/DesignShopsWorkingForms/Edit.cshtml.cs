@@ -41,7 +41,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 return NotFound();
             }
            ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == DesignShopWorkingForm.DesignShopId), "Id", "Description");
-           ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Description");
+           ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Name");
            TempData["selectedDesignShop"] = DesignShopWorkingForm.DesignShopId;
 
             return Page();

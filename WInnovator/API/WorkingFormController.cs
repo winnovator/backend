@@ -56,7 +56,7 @@ namespace WInnovator.API
                 .ToListAsync();
 
             var listOfWorkForms = list.Select(dswf => new WorkingFormViewModel()
-                {Id = dswf.Id, Description = dswf.WorkingForm.Description}).ToList();
+                {Id = dswf.Id, Name = dswf.WorkingForm.Name}).ToList();
 
             _logger.LogTrace($"Found {listOfWorkForms.Count} workingforms for designshop id {designShopId}");
             return listOfWorkForms;
@@ -95,7 +95,7 @@ namespace WInnovator.API
             else
             {
                 currentWorkingForm = new WorkingFormViewModel()
-                    {Id = dswf.Id, Description = dswf.WorkingForm.Description};
+                    {Id = dswf.Id, Name = dswf.WorkingForm.Name};
                 _logger.LogTrace(
                     $"Designshop with id {designShopId} has workingform with id {currentWorkingForm.Id} as active workingform.");
             }
@@ -162,7 +162,7 @@ namespace WInnovator.API
             else
             {
                 currentWorkingForm = new WorkingFormViewModel()
-                { Id = dswf.Id, Description = dswf.WorkingForm.Description };
+                { Id = dswf.Id, Name = dswf.WorkingForm.Name };
                 _logger.LogTrace(
                     $"Designshop with id {designShopId} now has workingform with id {currentWorkingForm.Id} as active workingform.");
             }
