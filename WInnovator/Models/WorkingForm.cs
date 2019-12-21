@@ -12,16 +12,26 @@ namespace WInnovator.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        [Required(ErrorMessage ="Geef een omschrijving van de werkvorm op")]
+        [Required(ErrorMessage ="Geef een naam van de werkvorm op")]
         [Display(Name ="Werkvorm naam")]
         public string Name { get; set; }
+        [Required(ErrorMessage = "Geef de weergavenaam van de werkvorm in de app op")]
+        [Display(Name = "Weergavenaam")]
+        public string DisplayName { get; set; }
         [Required]
         [Range(1, 300, ErrorMessage = "Geef een waarde in minuten op, minimaal 1 minuut en maximaal 300 minuten")]
         [Display(Name = "Standaard tijd benodigd")]
         public int DefaultTimeNeeded { get; set; } = 1;
+        [Required]
+        [Display(Name="Standaard fase")]
+        public Guid PhaseId { get; set; }
+        public virtual Phase Phase { get; set; }
         [DataType(DataType.Html)]
-        [Display(Name = "Inhoud")]
-        public string? Content { get; set; }
+        [Display(Name = "Samenvatting")]
+        public string? Resume { get; set; }
+        [DataType(DataType.Html)]
+        [Display(Name = "Beschrijving")]
+        public string? Description { get; set; }
         public Guid? belongsToDesignShopId;
 
         public virtual ICollection<DesignShopWorkingForm>? DesignShopWorkingForms { get; set; }

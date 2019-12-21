@@ -49,7 +49,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 if (workingForm != null)
                 {
                     DesignShopWorkingForm.TimeAllocated = workingForm.DefaultTimeNeeded;
-                    DesignShopWorkingForm.Content = workingForm.Content;
+                    DesignShopWorkingForm.Description = workingForm.Description;
                 }
             }
             return Page();
@@ -71,7 +71,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 if (currentWorkingForm != null)
                 {
                     // Set the content from the workingform as the content for this designshopworkingform
-                    ModelState.SetModelValue("DesignShopWorkingForm.Content", new ValueProviderResult(currentWorkingForm.Content, CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.Content", new ValueProviderResult(currentWorkingForm.Description, CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.TimeAllocated", new ValueProviderResult(currentWorkingForm.DefaultTimeNeeded.ToString(), CultureInfo.InvariantCulture));
                 }
                 else
