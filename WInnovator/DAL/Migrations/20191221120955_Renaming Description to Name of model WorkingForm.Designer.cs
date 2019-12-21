@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WInnovator.Data;
+using WInnovator.DAL;
 
-namespace WInnovator.Data.Migrations
+namespace WInnovator.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20191221120955_Renaming Description to Name of model WorkingForm")]

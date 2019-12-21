@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PasswordGenerator;
-using WInnovator.Data;
+using WInnovator.DAL;
 using WInnovator.Helper;
 using WInnovator.Interfaces;
 

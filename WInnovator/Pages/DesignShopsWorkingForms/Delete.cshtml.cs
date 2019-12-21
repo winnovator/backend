@@ -13,9 +13,9 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class DeleteModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context)
+        public DeleteModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }

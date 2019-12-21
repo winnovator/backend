@@ -27,10 +27,34 @@
             @Html.DisplayFor(model => model.DesignShopWorkingForm.WorkingForm.Name)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DesignShopWorkingForm.DisplayName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DesignShopWorkingForm.DisplayName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DesignShopWorkingForm.Implementer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DesignShopWorkingForm.Implementer)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DesignShopWorkingForm.TimeAllocated)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DesignShopWorkingForm.TimeAllocated)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DesignShopWorkingForm.PhaseId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DesignShopWorkingForm.Phase.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DesignShopWorkingForm.Resume)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DesignShopWorkingForm.Resume)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DesignShopWorkingForm.Description)

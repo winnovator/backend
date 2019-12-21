@@ -26,9 +26,28 @@
                     @Html.DropDownListFor(x => x.CurrentWorkingForm, Model.WorkingForms, new { @class = "form-control", onchange = "this.form.submit();" })
                 </div>
                 <div class="form-group col-md-4">
+                    <label asp-for="DesignShopWorkingForm.DisplayName" class="control-label"></label>
+                    <input asp-for="DesignShopWorkingForm.DisplayName" class="form-control" />
+                    <span asp-validation-for="DesignShopWorkingForm.DisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="DesignShopWorkingForm.Implementer" class="control-label"></label>
+                    <input asp-for="DesignShopWorkingForm.Implementer" class="form-control" />
+                    <span asp-validation-for="DesignShopWorkingForm.Implementer" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
                     <label asp-for="DesignShopWorkingForm.TimeAllocated" class="control-label"></label>
                     <input asp-for="DesignShopWorkingForm.TimeAllocated" class="form-control" />
                     <span asp-validation-for="DesignShopWorkingForm.TimeAllocated" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="DesignShopWorkingForm.PhaseId" class="control-label"></label>
+                    <select asp-for="DesignShopWorkingForm.PhaseId" class="form-control" asp-items="ViewBag.PhaseId"></select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label asp-for="DesignShopWorkingForm.Resume" class="control-label"></label>
+                    <textarea asp-for="DesignShopWorkingForm.Resume" rows="15" class="form-control"></textarea>
+                    <span asp-validation-for="DesignShopWorkingForm.Resume" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-12">
                     <label asp-for="DesignShopWorkingForm.Description" class="control-label"></label>

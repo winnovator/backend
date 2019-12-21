@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using WInnovator.Data;
+using WInnovator.DAL;
 using WInnovator.Models;
 
 namespace WInnovator
 {
     public class DeleteModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context)
+        public DeleteModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }

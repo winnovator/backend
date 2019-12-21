@@ -14,7 +14,7 @@ namespace WInnovator.Pages.DesignShops
     [Authorize(Roles = "Administrator,Facilitator")]
     public class DeleteModel : PageModelWithAppUserMethods
     {
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
+        public DeleteModel(WInnovator.DAL.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
         }
 

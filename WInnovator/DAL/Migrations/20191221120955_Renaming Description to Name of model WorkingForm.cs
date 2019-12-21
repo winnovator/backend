@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WInnovator.Data.Migrations
+namespace WInnovator.DAL.Migrations
 {
     public partial class RenamingDescriptiontoNameofmodelWorkingForm : Migration
     {

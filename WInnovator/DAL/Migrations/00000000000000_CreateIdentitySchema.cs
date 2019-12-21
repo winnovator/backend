@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WInnovator.Data.Migrations
+namespace WInnovator.DAL.Migrations
 {
     [ExcludeFromCodeCoverage]
     public partial class CreateIdentitySchema : Migration

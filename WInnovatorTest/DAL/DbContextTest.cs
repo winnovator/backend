@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WInnovator.Data;
+using WInnovator.DAL;
 
 namespace WInnovatorTest.Data
 {

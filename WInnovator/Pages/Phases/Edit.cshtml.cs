@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WInnovator.Data;
+using WInnovator.DAL;
 using WInnovator.Models;
 
 namespace WInnovator
 {
     public class EditModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public EditModel(WInnovator.Data.ApplicationDbContext context)
+        public EditModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }

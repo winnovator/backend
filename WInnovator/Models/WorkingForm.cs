@@ -22,10 +22,9 @@ namespace WInnovator.Models
         [Range(1, 300, ErrorMessage = "Geef een waarde in minuten op, minimaal 1 minuut en maximaal 300 minuten")]
         [Display(Name = "Standaard tijd benodigd")]
         public int DefaultTimeNeeded { get; set; } = 1;
-        [Required]
         [Display(Name="Standaard fase")]
-        public Guid PhaseId { get; set; }
-        public virtual Phase Phase { get; set; }
+        public Guid? PhaseId { get; set; }
+        public virtual Phase? Phase { get; set; }
         [DataType(DataType.Html)]
         [Display(Name = "Samenvatting")]
         public string? Resume { get; set; }

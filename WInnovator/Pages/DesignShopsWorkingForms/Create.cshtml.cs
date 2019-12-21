@@ -17,7 +17,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class CreateModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
         public SelectList WorkingForms { get; set; }
         public Guid? currentWorkingFormId { get; set; }
         [BindProperty]
@@ -26,7 +26,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         public DesignShopWorkingForm DesignShopWorkingForm { get; set; }
         public Guid currentDesignShop { get; set; }
 
-        public CreateModel(WInnovator.Data.ApplicationDbContext context)
+        public CreateModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }
@@ -48,7 +48,10 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 WorkingForm workingForm = _context.WorkingForm.Where(wf => wf.Id == guid).FirstOrDefault();
                 if (workingForm != null)
                 {
+                    DesignShopWorkingForm.DisplayName = workingForm.DisplayName;
                     DesignShopWorkingForm.TimeAllocated = workingForm.DefaultTimeNeeded;
+                    DesignShopWorkingForm.PhaseId = workingForm.PhaseId;
+                    DesignShopWorkingForm.Resume = workingForm.Resume;
                     DesignShopWorkingForm.Description = workingForm.Description;
                 }
             }
@@ -71,8 +74,11 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 if (currentWorkingForm != null)
                 {
                     // Set the content from the workingform as the content for this designshopworkingform
-                    ModelState.SetModelValue("DesignShopWorkingForm.Content", new ValueProviderResult(currentWorkingForm.Description, CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.DisplayName", new ValueProviderResult(currentWorkingForm.DisplayName, CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.TimeAllocated", new ValueProviderResult(currentWorkingForm.DefaultTimeNeeded.ToString(), CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.PhaseId", new ValueProviderResult(currentWorkingForm.PhaseId.ToString(), CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.Resume", new ValueProviderResult(currentWorkingForm.Resume, CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.Description", new ValueProviderResult(currentWorkingForm.Description, CultureInfo.InvariantCulture));
                 }
                 else
                 {
@@ -114,13 +120,14 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         {
             // Only the current designshop can be selected, no changes can be made!
             ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == currentDesignShop), "Id", "Description");
+            ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
             if (currentWorkingFormId != null)
             {
-                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Description", currentWorkingFormId);
+                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Name", currentWorkingFormId);
             }
             else
             {
-                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Description");
+                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Name");
             }
         }
 

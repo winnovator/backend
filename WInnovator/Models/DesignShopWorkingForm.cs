@@ -22,20 +22,19 @@ namespace WInnovator.Models
         public Guid WorkingFormId { get; set; }
         [Display(Name = "Werkvorm")]
         public virtual WorkingForm? WorkingForm { get; set; }
-        [Required(ErrorMessage ="Voer de uitvoerder in")]
-        [Display(Name ="Uitvoerder")]
-        public string Implementer { get; set; }
         [Required(ErrorMessage = "Geef de weergavenaam van de werkvorm in de app op")]
         [Display(Name = "Weergavenaam")]
         public string DisplayName { get; set; }
+        [Required(ErrorMessage = "Voer de uitvoerder in")]
+        [Display(Name = "Uitvoerder")]
+        public string Implementer { get; set; }
         [Required]
         [Range(1, 300, ErrorMessage = "Geef een waarde in minuten op, minimaal 1 minuut en maximaal 300 minuten")]
         [Display(Name = "Geplande benodigde tijd")]
         public int TimeAllocated { get; set; } = 1;
-        [Required]
         [Display(Name = "Fase")]
-        public Guid PhaseId { get; set; }
-        public virtual Phase Phase { get; set; }
+        public Guid? PhaseId { get; set; }
+        public virtual Phase? Phase { get; set; }
         [DataType(DataType.Html)]
         [Display(Name = "Samenvatting")]
         public string? Resume { get; set; }

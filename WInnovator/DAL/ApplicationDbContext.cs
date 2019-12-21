@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System.Diagnostics.CodeAnalysis;
 using WInnovator.Models;
 
-namespace WInnovator.Data
+namespace WInnovator.DAL
 {
     [ExcludeFromCodeCoverage]
     public class ApplicationDbContext : IdentityDbContext

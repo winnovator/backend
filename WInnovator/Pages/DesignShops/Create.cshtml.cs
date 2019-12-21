@@ -14,7 +14,7 @@ namespace WInnovator.Pages.DesignShops
     [Authorize(Roles = "Administrator,Facilitator")]
     public class CreateModel : PageModelWithAppUserMethods
     {
-        public CreateModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
+        public CreateModel(WInnovator.DAL.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
         }
 

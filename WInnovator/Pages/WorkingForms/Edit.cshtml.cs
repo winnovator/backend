@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -14,9 +15,9 @@ namespace WInnovator.Pages.WorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class EditModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public EditModel(WInnovator.Data.ApplicationDbContext context)
+        public EditModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }
@@ -37,6 +38,8 @@ namespace WInnovator.Pages.WorkingForms
             {
                 return NotFound();
             }
+            ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
+
             return Page();
         }
 

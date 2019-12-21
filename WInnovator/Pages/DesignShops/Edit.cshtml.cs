@@ -14,7 +14,7 @@ namespace WInnovator.Pages.DesignShops
     [Authorize(Roles = "Administrator,Facilitator")]
     public class EditModel : PageModelWithAppUserMethods
     {
-        public EditModel(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
+        public EditModel(WInnovator.DAL.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper) : base(context, userIdentityHelper)
         {
         }
 

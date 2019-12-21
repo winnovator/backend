@@ -12,9 +12,9 @@ namespace WInnovator.Pages.WorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class IndexModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public IndexModel(WInnovator.Data.ApplicationDbContext context)
+        public IndexModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }

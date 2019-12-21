@@ -14,22 +14,40 @@
     <h4>WorkingForm</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.WorkingForm.Name)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-9">
             @Html.DisplayFor(model => model.WorkingForm.Name)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.WorkingForm.DisplayName)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.WorkingForm.DisplayName)
+        </dd>
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.WorkingForm.DefaultTimeNeeded)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-9">
             @Html.DisplayFor(model => model.WorkingForm.DefaultTimeNeeded)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.WorkingForm.PhaseId)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.WorkingForm.Phase.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.WorkingForm.Resume)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.WorkingForm.Resume)
+        </dd>
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.WorkingForm.Description)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-9">
             @Html.DisplayFor(model => model.WorkingForm.Description)
         </dd>
     </dl>

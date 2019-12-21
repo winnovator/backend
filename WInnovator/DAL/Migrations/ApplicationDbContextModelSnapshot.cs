@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WInnovator.Data;
+using WInnovator.DAL;
 
-namespace WInnovator.Data.Migrations
+namespace WInnovator.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -235,6 +235,9 @@ namespace WInnovator.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<TimeSpan>("Starttime")
+                        .HasColumnType("time");
+
                     b.HasKey("Id");
 
                     b.ToTable("DesignShop");
@@ -246,13 +249,33 @@ namespace WInnovator.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("DesignShopId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Implementer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCurrentWorkingForm")
                         .HasColumnType("bit");
 
                     b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PhaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Resume")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TimeAllocated")
                         .HasColumnType("int");
 
                     b.Property<Guid>("WorkingFormId")
@@ -261,6 +284,8 @@ namespace WInnovator.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DesignShopId");
+
+                    b.HasIndex("PhaseId");
 
                     b.HasIndex("WorkingFormId");
 
@@ -294,7 +319,7 @@ namespace WInnovator.Data.Migrations
                     b.ToTable("ImageStore");
                 });
 
-            modelBuilder.Entity("WInnovator.Models.WorkingForm", b =>
+            modelBuilder.Entity("WInnovator.Models.Phase", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -305,6 +330,39 @@ namespace WInnovator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.ToTable("Phase");
+                });
+
+            modelBuilder.Entity("WInnovator.Models.WorkingForm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DefaultTimeNeeded")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PhaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Resume")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PhaseId");
 
                     b.ToTable("WorkingForm");
                 });
@@ -368,6 +426,10 @@ namespace WInnovator.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("WInnovator.Models.Phase", "Phase")
+                        .WithMany("DesignShopWorkingForms")
+                        .HasForeignKey("PhaseId");
+
                     b.HasOne("WInnovator.Models.WorkingForm", "WorkingForm")
                         .WithMany("DesignShopWorkingForms")
                         .HasForeignKey("WorkingFormId")
@@ -382,6 +444,13 @@ namespace WInnovator.Data.Migrations
                         .HasForeignKey("DesignShopWorkingFormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WInnovator.Models.WorkingForm", b =>
+                {
+                    b.HasOne("WInnovator.Models.Phase", "Phase")
+                        .WithMany("WorkingForms")
+                        .HasForeignKey("PhaseId");
                 });
 #pragma warning restore 612, 618
         }

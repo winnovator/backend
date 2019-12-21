@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace WInnovator.Data.Migrations
+namespace WInnovator.DAL.Migrations
 {
     [ExcludeFromCodeCoverage]
     public partial class DescriptionofDesignShopisrequired : Migration

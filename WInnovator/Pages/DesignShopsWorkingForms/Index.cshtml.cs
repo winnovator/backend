@@ -17,10 +17,10 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class IndexModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(WInnovator.Data.ApplicationDbContext context, ILogger<IndexModel> logger)
+        public IndexModel(WInnovator.DAL.ApplicationDbContext context, ILogger<IndexModel> logger)
         {
             _context = context;
             _logger = logger;

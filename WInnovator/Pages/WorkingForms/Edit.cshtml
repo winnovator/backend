@@ -13,17 +13,25 @@
     <h4>WorkingForm</h4>
     <hr />
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-12">
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="WorkingForm.Id" />
                 <div class="form-group">
                     <label asp-for="WorkingForm.Name" class="control-label"></label>
-                    <input asp-for="WorkingForm.Name" class="form-control" />
+                    <input asp-for="WorkingForm.Name" class="form-control col-md-4" />
                     <span asp-validation-for="WorkingForm.Name" class="text-danger"></span>
+                    <label asp-for="WorkingForm.DisplayName" class="control-label"></label>
+                    <input asp-for="WorkingForm.DisplayName" class="form-control col-md-4" />
+                    <span asp-validation-for="WorkingForm.DisplayName" class="text-danger"></span>
                     <label asp-for="WorkingForm.DefaultTimeNeeded" class="control-label"></label>
-                    <input asp-for="WorkingForm.DefaultTimeNeeded" class="form-control" />
+                    <input asp-for="WorkingForm.DefaultTimeNeeded" class="form-control col-md-2" />
                     <span asp-validation-for="WorkingForm.DefaultTimeNeeded" class="text-danger"></span>
+                    <label asp-for="WorkingForm.PhaseId" class="control-label"></label>
+                    <select asp-for="WorkingForm.PhaseId" class="form-control col-md-4" asp-items="ViewBag.PhaseId"></select>
+                    <label asp-for="WorkingForm.Resume" class="control-label"></label>
+                    <textarea asp-for="WorkingForm.Resume" rows="15" class="form-control"></textarea>
+                    <span asp-validation-for="WorkingForm.Resume" class="text-danger"></span>
                     <label asp-for="WorkingForm.Description" class="control-label"></label>
                     <textarea asp-for="WorkingForm.Description" rows="15" class="form-control"></textarea>
                     <span asp-validation-for="WorkingForm.Description" class="text-danger"></span>

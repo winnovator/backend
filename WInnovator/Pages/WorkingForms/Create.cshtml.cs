@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using WInnovator.Models;
@@ -11,15 +12,17 @@ namespace WInnovator.Pages.WorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class CreateModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public CreateModel(WInnovator.Data.ApplicationDbContext context)
+        public CreateModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }
 
         public IActionResult OnGet()
         {
+            ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
+
             return Page();
         }
 
