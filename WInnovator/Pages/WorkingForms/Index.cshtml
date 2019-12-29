@@ -19,6 +19,12 @@
                 @Html.DisplayNameFor(model => model.WorkingForm[0].Name)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.WorkingForm[0].PhaseId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkingForm[0].UploadEnabled)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.WorkingForm[0].DefaultTimeNeeded)
             </th>
             <th></th>
@@ -29,6 +35,12 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phase.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UploadEnabled)
             </td>
             <td>
                 @TimeSpan.FromMinutes(item.DefaultTimeNeeded).ToString(@"hh\:mm")

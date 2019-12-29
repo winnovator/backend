@@ -65,6 +65,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             if (selected != null)
             {
                 DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description), selected.Id);
+                TempData["belongsToDesignShop"] = selected.Id;
             }
             else
             {

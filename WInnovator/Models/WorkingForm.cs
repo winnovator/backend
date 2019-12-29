@@ -25,13 +25,16 @@ namespace WInnovator.Models
         [Display(Name="Standaard fase")]
         public Guid? PhaseId { get; set; }
         public virtual Phase? Phase { get; set; }
+        [Display(Name = "Foto-upload toegestaan")]
+        public bool UploadEnabled { get; set; }
         [DataType(DataType.Html)]
         [Display(Name = "Samenvatting")]
         public string? Resume { get; set; }
         [DataType(DataType.Html)]
         [Display(Name = "Beschrijving")]
         public string? Description { get; set; }
-        public Guid? belongsToDesignShopId;
+        public Guid? belongsToDesignShopId { get; set; }
+        public virtual DesignShop? belongsToDesignShop { get; set; }
 
         public virtual ICollection<DesignShopWorkingForm>? DesignShopWorkingForms { get; set; }
     }

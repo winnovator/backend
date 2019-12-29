@@ -28,5 +28,6 @@ namespace WInnovator.Models
         public string? AppUseraccount { get; set; }
 
         public virtual ICollection<DesignShopWorkingForm>? DesignShopWorkingForms { get; set; }
+        public virtual ICollection<WorkingForm>? WorkingForms { get; set; }
     }
 }

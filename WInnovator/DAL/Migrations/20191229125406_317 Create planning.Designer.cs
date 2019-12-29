@@ -10,8 +10,8 @@ using WInnovator.DAL;
 namespace WInnovator.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191221164105_317 Create Planning")]
-    partial class _317CreatePlanning
+    [Migration("20191229125406_317 Create planning")]
+    partial class _317Createplanning
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -280,6 +280,9 @@ namespace WInnovator.DAL.Migrations
                     b.Property<int>("TimeAllocated")
                         .HasColumnType("int");
 
+                    b.Property<bool>("UploadEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("WorkingFormId")
                         .HasColumnType("uniqueidentifier");
 
@@ -362,9 +365,17 @@ namespace WInnovator.DAL.Migrations
                     b.Property<string>("Resume")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("UploadEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("belongsToDesignShopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PhaseId");
+
+                    b.HasIndex("belongsToDesignShopId");
 
                     b.ToTable("WorkingForm");
                 });
@@ -453,6 +464,10 @@ namespace WInnovator.DAL.Migrations
                     b.HasOne("WInnovator.Models.Phase", "Phase")
                         .WithMany("WorkingForms")
                         .HasForeignKey("PhaseId");
+
+                    b.HasOne("WInnovator.Models.DesignShop", "belongsToDesignShop")
+                        .WithMany("WorkingForms")
+                        .HasForeignKey("belongsToDesignShopId");
                 });
 #pragma warning restore 612, 618
         }

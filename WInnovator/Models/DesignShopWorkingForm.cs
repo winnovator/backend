@@ -35,6 +35,8 @@ namespace WInnovator.Models
         [Display(Name = "Fase")]
         public Guid? PhaseId { get; set; }
         public virtual Phase? Phase { get; set; }
+        [Display(Name = "Foto-upload toegestaan")]
+        public bool UploadEnabled { get; set; }
         [DataType(DataType.Html)]
         [Display(Name = "Samenvatting")]
         public string? Resume { get; set; }

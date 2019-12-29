@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WInnovator.DAL;
 
-namespace WInnovator.DAL.Migrations
+namespace WInnovator.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -278,6 +278,9 @@ namespace WInnovator.DAL.Migrations
                     b.Property<int>("TimeAllocated")
                         .HasColumnType("int");
 
+                    b.Property<bool>("UploadEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("WorkingFormId")
                         .HasColumnType("uniqueidentifier");
 
@@ -360,9 +363,17 @@ namespace WInnovator.DAL.Migrations
                     b.Property<string>("Resume")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("UploadEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("belongsToDesignShopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PhaseId");
+
+                    b.HasIndex("belongsToDesignShopId");
 
                     b.ToTable("WorkingForm");
                 });
@@ -451,6 +462,10 @@ namespace WInnovator.DAL.Migrations
                     b.HasOne("WInnovator.Models.Phase", "Phase")
                         .WithMany("WorkingForms")
                         .HasForeignKey("PhaseId");
+
+                    b.HasOne("WInnovator.Models.DesignShop", "belongsToDesignShop")
+                        .WithMany("WorkingForms")
+                        .HasForeignKey("belongsToDesignShopId");
                 });
 #pragma warning restore 612, 618
         }

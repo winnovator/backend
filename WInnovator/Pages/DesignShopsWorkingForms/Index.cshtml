@@ -31,7 +31,8 @@
         {
             <p>
                 <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Create New</a> |
-                <a asp-page="Reorder" asp-route-designshopId="@Model.currentDesignShopGuid">Wijzig volgorde</a>
+                <a asp-page="Reorder" asp-route-designshopId="@Model.currentDesignShopGuid">Wijzig volgorde</a> |
+                <a asp-page="/WorkingForms/Create">Nieuwe werkvorm binnen deze DesignShop</a>
             </p>
             <table class="table">
                 <thead>
@@ -49,6 +50,9 @@
                             @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].PhaseId)
                         </th>
                         <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].UploadEnabled)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].TimeAllocated)
                         </th>
                         <th></th>
@@ -57,28 +61,31 @@
                 <tbody>
                     @foreach (var item in Model.DesignShopWorkingForm)
                     {
-                    <tr>
-                        <td>
-                            @item.DesignShop.Starttime.Add(TimeSpan.FromMinutes(Model.DesignShopWorkingForm.Where(wf => wf.Order < item.Order).Sum(wf => wf.TimeAllocated))).ToString(@"hh\:mm")
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.WorkingForm.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Implementer)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Phase.Name)
-                        </td>
-                        <td>
-                            @TimeSpan.FromMinutes(item.TimeAllocated).ToString(@"hh\:mm")
-                        </td>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                @item.DesignShop.Starttime.Add(TimeSpan.FromMinutes(Model.DesignShopWorkingForm.Where(wf => wf.Order < item.Order).Sum(wf => wf.TimeAllocated))).ToString(@"hh\:mm")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.WorkingForm.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Implementer)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Phase.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UploadEnabled)
+                            </td>
+                            <td>
+                                @TimeSpan.FromMinutes(item.TimeAllocated).ToString(@"hh\:mm")
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

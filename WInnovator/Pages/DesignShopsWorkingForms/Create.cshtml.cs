@@ -51,6 +51,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                     DesignShopWorkingForm.DisplayName = workingForm.DisplayName;
                     DesignShopWorkingForm.TimeAllocated = workingForm.DefaultTimeNeeded;
                     DesignShopWorkingForm.PhaseId = workingForm.PhaseId;
+                    DesignShopWorkingForm.UploadEnabled = workingForm.UploadEnabled;
                     DesignShopWorkingForm.Resume = workingForm.Resume;
                     DesignShopWorkingForm.Description = workingForm.Description;
                 }
@@ -77,6 +78,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                     ModelState.SetModelValue("DesignShopWorkingForm.DisplayName", new ValueProviderResult(currentWorkingForm.DisplayName, CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.TimeAllocated", new ValueProviderResult(currentWorkingForm.DefaultTimeNeeded.ToString(), CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.PhaseId", new ValueProviderResult(currentWorkingForm.PhaseId.ToString(), CultureInfo.InvariantCulture));
+                    ModelState.SetModelValue("DesignShopWorkingForm.UploadEnabled", new ValueProviderResult(currentWorkingForm.UploadEnabled.ToString(), CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.Resume", new ValueProviderResult(currentWorkingForm.Resume, CultureInfo.InvariantCulture));
                     ModelState.SetModelValue("DesignShopWorkingForm.Description", new ValueProviderResult(currentWorkingForm.Description, CultureInfo.InvariantCulture));
                 }

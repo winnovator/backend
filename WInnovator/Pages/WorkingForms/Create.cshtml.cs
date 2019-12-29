@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using WInnovator.Models;
 
@@ -22,6 +24,23 @@ namespace WInnovator.Pages.WorkingForms
         public IActionResult OnGet()
         {
             ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
+            WorkingForm WorkingForm = new WorkingForm();
+            if (TempData["belongsToDesignShop"] != null)
+            {
+                try
+                {
+                    Guid designshopId = Guid.Parse(TempData["belongsToDesignShop"].ToString());
+                    DesignShop designShop = _context.DesignShop.Where(ds => ds.Id == designshopId).FirstOrDefault();
+                    if (designShop != null)
+                    {
+                        WorkingForm.belongsToDesignShopId = designshopId;
+                        ViewData["DesignShopDescription"] = designShop.Description;
+                    }
+                } catch
+                {
+                    ViewData["GuidParseError"] = "Unable to get the ID of the DesignShop";
+                }
+            }
 
             return Page();
         }

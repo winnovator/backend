@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WInnovator.DAL.Migrations
 {
-    public partial class _317CreatePlanning : Migration
+    public partial class _317Createplanning : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,6 +34,17 @@ namespace WInnovator.DAL.Migrations
                 table: "WorkingForm",
                 nullable: true);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "UploadEnabled",
+                table: "WorkingForm",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "belongsToDesignShopId",
+                table: "WorkingForm",
+                nullable: true);
+
             migrationBuilder.AddColumn<string>(
                 name: "Description",
                 table: "DesignShopWorkingForm",
@@ -67,6 +78,12 @@ namespace WInnovator.DAL.Migrations
                 nullable: false,
                 defaultValue: 0);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "UploadEnabled",
+                table: "DesignShopWorkingForm",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.AddColumn<TimeSpan>(
                 name: "Starttime",
                 table: "DesignShop",
@@ -91,6 +108,11 @@ namespace WInnovator.DAL.Migrations
                 column: "PhaseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_WorkingForm_belongsToDesignShopId",
+                table: "WorkingForm",
+                column: "belongsToDesignShopId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DesignShopWorkingForm_PhaseId",
                 table: "DesignShopWorkingForm",
                 column: "PhaseId");
@@ -110,6 +132,14 @@ namespace WInnovator.DAL.Migrations
                 principalTable: "Phase",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_WorkingForm_DesignShop_belongsToDesignShopId",
+                table: "WorkingForm",
+                column: "belongsToDesignShopId",
+                principalTable: "DesignShop",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -122,11 +152,19 @@ namespace WInnovator.DAL.Migrations
                 name: "FK_WorkingForm_Phase_PhaseId",
                 table: "WorkingForm");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_WorkingForm_DesignShop_belongsToDesignShopId",
+                table: "WorkingForm");
+
             migrationBuilder.DropTable(
                 name: "Phase");
 
             migrationBuilder.DropIndex(
                 name: "IX_WorkingForm_PhaseId",
+                table: "WorkingForm");
+
+            migrationBuilder.DropIndex(
+                name: "IX_WorkingForm_belongsToDesignShopId",
                 table: "WorkingForm");
 
             migrationBuilder.DropIndex(
@@ -154,6 +192,14 @@ namespace WInnovator.DAL.Migrations
                 table: "WorkingForm");
 
             migrationBuilder.DropColumn(
+                name: "UploadEnabled",
+                table: "WorkingForm");
+
+            migrationBuilder.DropColumn(
+                name: "belongsToDesignShopId",
+                table: "WorkingForm");
+
+            migrationBuilder.DropColumn(
                 name: "Description",
                 table: "DesignShopWorkingForm");
 
@@ -175,6 +221,10 @@ namespace WInnovator.DAL.Migrations
 
             migrationBuilder.DropColumn(
                 name: "TimeAllocated",
+                table: "DesignShopWorkingForm");
+
+            migrationBuilder.DropColumn(
+                name: "UploadEnabled",
                 table: "DesignShopWorkingForm");
 
             migrationBuilder.DropColumn(

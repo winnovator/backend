@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using WInnovator.Models;
 
@@ -23,7 +24,7 @@ namespace WInnovator.Pages.WorkingForms
 
         public async Task OnGetAsync()
         {
-            WorkingForm = await _context.WorkingForm.ToListAsync();
+            WorkingForm = await _context.WorkingForm.Where(wf => wf.belongsToDesignShopId == null).ToListAsync();
         }
     }
 }
