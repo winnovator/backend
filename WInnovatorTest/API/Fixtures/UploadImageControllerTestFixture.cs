@@ -70,6 +70,7 @@ namespace WInnovatorTest.API.Fixtures
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
                 if (i == 4) { 
                     _currentWorkingForm = designShopWorkingForm;
+                    _currentWorkingForm.UploadEnabled = true;
                     _currentWorkingForm.IsCurrentWorkingForm = true;
                 }
             }
