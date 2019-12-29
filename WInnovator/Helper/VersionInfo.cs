@@ -7,15 +7,16 @@ namespace WInnovator.Helper
     {
         public static string assemblyVersion { get
             {
-                return "";
+                //return "";
+                return $"{ GitVersionInformation.ShortSha }";
                 //return $"{ GitVersionInformation.Major }.{ GitVersionInformation.Minor }.{ GitVersionInformation.Patch }-{ GitVersionInformation.ShortSha }";
             }
         }
 
         public static string branchName {  get
             {
-                return "";
-                //return $"{ GitVersionInformation.BranchName }";
+                //return "";
+                return $"{ GitVersionInformation.BranchName }";
             } 
         }
 
