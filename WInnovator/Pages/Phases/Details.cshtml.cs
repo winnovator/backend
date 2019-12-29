@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using WInnovator.DAL;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using WInnovator.Models;
 
 namespace WInnovator
 {
+    [ExcludeFromCodeCoverage]
+    [Authorize(Roles = "Administrator,Facilitator")]
     public class DetailsModel : PageModel
     {
         private readonly WInnovator.DAL.ApplicationDbContext _context;

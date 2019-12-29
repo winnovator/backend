@@ -98,6 +98,7 @@ namespace WInnovator.Pages.WorkingForms
                 _context.DesignShopWorkingForm.Add(designShopWorkingForm);
                 await _context.SaveChangesAsync();
 
+                TempData["selectedDesignShop"] = designshopId;
                 return RedirectToPage("../DesignShopsWorkingForms/Index");
             }
 

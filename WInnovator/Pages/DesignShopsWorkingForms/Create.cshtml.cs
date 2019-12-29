@@ -125,11 +125,11 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
             if (currentWorkingFormId != null)
             {
-                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Name", currentWorkingFormId);
+                WorkingForms = new SelectList(_context.WorkingForm.Where(wf => wf.belongsToDesignShopId == null || wf.belongsToDesignShopId == currentDesignShop), "Id", "Name", currentWorkingFormId);
             }
             else
             {
-                WorkingForms = new SelectList(_context.WorkingForm, "Id", "Name");
+                WorkingForms = new SelectList(_context.WorkingForm.Where(wf => wf.belongsToDesignShopId == null || wf.belongsToDesignShopId == currentDesignShop), "Id", "Name");
             }
         }
 

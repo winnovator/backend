@@ -86,6 +86,8 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             {
                 Guid dsGuid = Guid.Parse(ModelState.Values.ToList().First().AttemptedValue);
                 currentDesignShopGuid = dsGuid;
+                TempData.Remove("belongsToDesignShop");
+                TempData["belongsToDesignShop"] = currentDesignShopGuid;
                 await GetWorkingForms(dsGuid);
 
                 return Page();

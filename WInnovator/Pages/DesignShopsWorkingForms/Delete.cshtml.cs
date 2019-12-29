@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using WInnovator.Models;
 
@@ -48,10 +49,15 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 return NotFound();
             }
 
-            DesignShopWorkingForm = await _context.DesignShopWorkingForm.FindAsync(id);
+            DesignShopWorkingForm = await _context.DesignShopWorkingForm.Where(dswf => dswf.Id == id).Include(dswf => dswf.WorkingForm).FirstOrDefaultAsync();
 
             if (DesignShopWorkingForm != null)
             {
+                // First, check the parent... If the field belongsTo has been set, remove it as well.
+                if (DesignShopWorkingForm.WorkingForm.belongsToDesignShopId != null)
+                {
+                    _context.WorkingForm.Remove(DesignShopWorkingForm.WorkingForm);
+                }
                 _context.DesignShopWorkingForm.Remove(DesignShopWorkingForm);
                 await _context.SaveChangesAsync();
             }
