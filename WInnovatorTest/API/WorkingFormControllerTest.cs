@@ -158,7 +158,7 @@ namespace WInnovatorTest.API
         {
             // First, check if we get the correct workingform
             // Act
-            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShop.Id);
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShopAPI(_fixture._designShop.Id);
 
             // Assert
             // First assert: did we get an actionresult with a list
@@ -170,7 +170,7 @@ namespace WInnovatorTest.API
 
             // The next call should generate a 404 error because the previous call got the last workingform
             // Act
-            var nextResult = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShop.Id);
+            var nextResult = await _fixture._controller.SetNextWorkingFormOfDesignShopAPI(_fixture._designShop.Id);
 
             // Assert
             // First assert: did we get an actionresult with a list
@@ -184,7 +184,7 @@ namespace WInnovatorTest.API
         public async Task Test10_GetNextWorkingFormOfInvalidDesignShop()
         {
             // Act
-            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(_fixture._designShopWithoutWorkingForms.Id);
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShopAPI(_fixture._designShopWithoutWorkingForms.Id);
 
             // Assert
             // First assert: did we get an actionresult with a list
@@ -197,7 +197,7 @@ namespace WInnovatorTest.API
         public async Task Test11_GetNextWorkingFormOfNonExistingDesignShop()
         {
             // Act
-            var result = await _fixture._controller.SetNextWorkingFormOfDesignShop(new Guid());
+            var result = await _fixture._controller.SetNextWorkingFormOfDesignShopAPI(new Guid());
 
             // Assert
             // First assert: did we get an actionresult with a list

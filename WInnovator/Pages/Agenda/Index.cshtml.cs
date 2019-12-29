@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using WInnovator.API;
 using WInnovator.Models;
 
 namespace WInnovator.Pages.Agenda
@@ -19,11 +20,13 @@ namespace WInnovator.Pages.Agenda
     {
         private readonly WInnovator.DAL.ApplicationDbContext _context;
         private readonly ILogger<IndexModel> _logger;
+        private readonly ILogger<WorkingFormController> _workingFormControllerLogger;
 
-        public IndexModel(WInnovator.DAL.ApplicationDbContext context, ILogger<IndexModel> logger)
+        public IndexModel(WInnovator.DAL.ApplicationDbContext context, ILogger<IndexModel> logger, ILogger<WorkingFormController> workingFormControllerLogger)
         {
             _context = context;
             _logger = logger;
+            _workingFormControllerLogger = workingFormControllerLogger;
         }
 
         public IList<DesignShopWorkingForm> DesignShopWorkingForm { get; set; }
@@ -34,6 +37,10 @@ namespace WInnovator.Pages.Agenda
         public Guid currentDesignShopGuid { get; set; }
 
         public async Task OnGetAsync()
+        {
+            await GetData();
+        }
+        private async Task GetData()
         {
             LoadDesignShops();
             DesignShop selected = null;
@@ -85,6 +92,7 @@ namespace WInnovator.Pages.Agenda
             {
                 Guid dsGuid = Guid.Parse(ModelState.Values.ToList().First().AttemptedValue);
                 currentDesignShopGuid = dsGuid;
+                TempData["selectedDesignShop"] = currentDesignShopGuid;
                 await GetWorkingForms(dsGuid);
 
                 return Page();
@@ -93,6 +101,23 @@ namespace WInnovator.Pages.Agenda
             {
                 return NotFound();
             }
+        }
+
+        public async Task<IActionResult> OnPostNextAsync(Guid? designshopId)
+        {
+
+            if (designshopId == null)
+            {
+                return NotFound();
+            }
+
+            WorkingFormController controller = new WorkingFormController(_context, _workingFormControllerLogger);
+
+            await controller.SetNextWorkingFormOfDesignShopINTERNAL(designshopId.GetValueOrDefault());
+
+            TempData["selectedDesignShop"] = designshopId;
+
+            return RedirectToPage("./Index");
         }
 
         public async Task GetWorkingForms(Guid dsGuid)
