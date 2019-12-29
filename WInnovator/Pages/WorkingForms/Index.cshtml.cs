@@ -24,6 +24,7 @@ namespace WInnovator.Pages.WorkingForms
 
         public async Task OnGetAsync()
         {
+            TempData.Remove("belongsToDesignShop");     // Remove this value if existing if someone comes in via Index
             WorkingForm = await _context.WorkingForm.Where(wf => wf.belongsToDesignShopId == null).ToListAsync();
         }
     }
