@@ -17,16 +17,16 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class IndexModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
         private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(WInnovator.Data.ApplicationDbContext context, ILogger<IndexModel> logger)
+        public IndexModel(WInnovator.DAL.ApplicationDbContext context, ILogger<IndexModel> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public IList<DesignShopWorkingForm> DesignShopWorkingForm { get;set; }
+        public IList<DesignShopWorkingForm> DesignShopWorkingForm { get; set; }
         public IList<DesignShop> listOfDesignShop { get; set; }
         public SelectList DesignShops { get; set; }
         [BindProperty]
@@ -46,16 +46,17 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                     {
                         selected = listOfDesignShop.Where(ds => ds.Id == selectedDesignShop).First();
                     }
-                } catch
+                }
+                catch
                 {
                     _logger.LogError("Exception thrown when trying to get the selectedDesignShopId from TempData");
                 }
             }
-            if(selected == null) 
+            if (selected == null)
             {
                 selected = listOfDesignShop.FirstOrDefault();
             }
-            if(selected != null)
+            if (selected != null)
             {
                 currentDesignShopGuid = selected.Id;
                 await GetWorkingForms(selected.Id);
@@ -64,7 +65,9 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             if (selected != null)
             {
                 DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description), selected.Id);
-            } else
+                TempData["belongsToDesignShop"] = selected.Id;
+            }
+            else
             {
                 DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
             }
@@ -74,7 +77,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
         {
             LoadDesignShops();
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
@@ -83,6 +86,8 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             {
                 Guid dsGuid = Guid.Parse(ModelState.Values.ToList().First().AttemptedValue);
                 currentDesignShopGuid = dsGuid;
+                TempData.Remove("belongsToDesignShop");
+                TempData["belongsToDesignShop"] = currentDesignShopGuid;
                 await GetWorkingForms(dsGuid);
 
                 return Page();
@@ -93,10 +98,12 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             }
         }
 
-        public async Task GetWorkingForms(Guid dsGuid) {
+        public async Task GetWorkingForms(Guid dsGuid)
+        {
             DesignShopWorkingForm = await _context.DesignShopWorkingForm
                 .Include(d => d.DesignShop)
                 .Include(d => d.WorkingForm)
+                .Include(d => d.Phase)
                 .Where(d => d.DesignShop.Id == dsGuid)
                 .OrderBy(d => d.Order)
                 .ToListAsync();

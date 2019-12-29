@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using WInnovator.Data;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
+using WInnovator.DAL;
 using WInnovator.Models;
 using WInnovator.ViewModels;
 
@@ -114,8 +114,22 @@ namespace WInnovator.API
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator,Facilitator")]
-        public async Task<ActionResult<WorkingFormViewModel>> SetNextWorkingFormOfDesignShop(Guid designShopId)
+        public async Task<ActionResult<WorkingFormViewModel>> SetNextWorkingFormOfDesignShopAPI(Guid designShopId)
         {
+            return await SetNextWorkingFormOfDesignShopINTERNAL(designShopId);
+        }
+
+        /// <summary>
+        /// Internal method to Set the next workingform of the specified designshop
+        /// </summary>
+        /// <param name="designShopId">guid of the designshop</param>
+        /// <returns>WorkingFormModelView of the next workingform</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        internal async Task<ActionResult<WorkingFormViewModel>> SetNextWorkingFormOfDesignShopINTERNAL(Guid designShopId)
+        { 
             int currentInOrder = 0;
 
             // Check if designshop exists

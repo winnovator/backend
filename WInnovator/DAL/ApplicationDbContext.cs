@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using System.Diagnostics.CodeAnalysis;
 using WInnovator.Models;
 
-namespace WInnovator.Data
+namespace WInnovator.DAL
 {
     [ExcludeFromCodeCoverage]
     public class ApplicationDbContext : IdentityDbContext
@@ -18,26 +18,6 @@ namespace WInnovator.Data
         public DbSet<DesignShopWorkingForm> DesignShopWorkingForm { get; set; }
         public DbSet<ImageStore> ImageStore { get; set; }
         public DbSet<WorkingForm> WorkingForm { get; set; }
-
-        //protected override void OnModelCreating(ModelBuilder builder)
-        //{
-        //    base.OnModelCreating(builder);
-
-        //    //This will singularize all table names
-        //    foreach (IMutableEntityType entityType in builder.Model.GetEntityTypes())
-        //    {
-        //        entityType.SetTableName(entityType.DisplayName());
-        //    }
-
-        //    //// Specify specific binding between DesignShop, WorkingForm and DesignShopWorkingForm
-
-        //    //builder.Entity<DesignShopWorkingForm>()
-        //    //    .HasOne<DesignShop>(dswf => dswf.DesignShop)
-        //    //    .WithMany(ds => ds.DesignShopWorkingForms);
-
-        //    //builder.Entity<DesignShopWorkingForm>()
-        //    //    .HasOne<WorkingForm>(dswf => dswf.WorkingForm)
-        //    //    .WithMany(wf => wf.DesignShopWorkingForms);
-        //}
+        public DbSet<Phase> Phase { get; set; }
     }
 }

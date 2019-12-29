@@ -1,0 +1,33 @@
+﻿@page
+@model WInnovator.DeleteModel
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Verwijderen</title>
+</head>
+<body>
+
+<h3>Weet u zeker dat u deze fase verwijderen wilt?</h3>
+<div>
+    <h4>Phase</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Phase.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Phase.Name)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Phase.Id" />
+        <input type="submit" value="Verwijderen" class="btn btn-danger" /> |
+        <a asp-page="./Index">Terug naar de overzichtspagina</a>
+    </form>
+</div>
+</body>
+</html>

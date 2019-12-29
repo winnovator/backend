@@ -74,7 +74,35 @@ namespace WInnovatorTest.API
         }
         
         [Fact]
-        public async Task Test5_UploadToDesignShopWithoutValidFile()
+        public async Task Test5_UploadToDesignShopWithValidCurrentWorkingFormThenSelectingNonValidBecauseUploadDisabled()
+        {
+            // Act
+            var resultOK = await _fixture._controller.PostUploadImageStore(_fixture._designShopWithCurrentWorkingForm.Id,
+                MockFile.mock("example1.png", "image/png"));
+
+            // Assert
+            // First assert: did we get an actionresult with an ImageStore
+            var firstResultOK = Assert.IsType<ActionResult<ImageStore>>(resultOK);
+            // Second assert, is the file accepted
+            Assert.IsType<AcceptedResult>(resultOK.Result);
+        
+            // Now, select the next WorkingForm as active but without Upload Enabled
+            await _fixture._workingformController.SetNextWorkingFormOfDesignShopAPI(_fixture._designShopWithCurrentWorkingForm
+                .Id);
+            
+            // Act
+            var resultNOK = await _fixture._controller.PostUploadImageStore(_fixture._designShopWithCurrentWorkingForm.Id,
+                MockFile.mock("example1.png", "image/png"));
+
+            // Assert
+            // First assert: did we get an actionresult with an ImageStore
+            var firstResultNOK = Assert.IsType<ActionResult<ImageStore>>(resultNOK);
+            // Second assert, is the file accepted
+            Assert.IsType<NotFoundResult>(resultNOK.Result);
+        }
+
+        [Fact]
+        public async Task Test6_UploadToDesignShopWithoutValidFile()
         {
             // Act
             var result = await _fixture._controller.PostUploadImageStore(

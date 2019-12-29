@@ -13,9 +13,9 @@ namespace WInnovator.Pages.DesignShops
     [Authorize(Roles = "Administrator,Facilitator")]
     public class DetailsModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public DetailsModel(WInnovator.Data.ApplicationDbContext context)
+        public DetailsModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }

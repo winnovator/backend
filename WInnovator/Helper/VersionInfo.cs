@@ -8,7 +8,8 @@ namespace WInnovator.Helper
         public static string assemblyVersion { get
             {
                 //return "";
-                return $"{ GitVersionInformation.Major }.{ GitVersionInformation.Minor }.{ GitVersionInformation.Patch }-{ GitVersionInformation.ShortSha }";
+                return $"{ GitVersionInformation.ShortSha }";
+                //return $"{ GitVersionInformation.Major }.{ GitVersionInformation.Minor }.{ GitVersionInformation.Patch }-{ GitVersionInformation.ShortSha }";
             }
         }
 

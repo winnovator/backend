@@ -8,10 +8,10 @@ namespace WInnovator.Pages.DesignShops
     [ExcludeFromCodeCoverage]
     public class PageModelWithAppUserMethods : PageModel
     {
-        protected readonly WInnovator.Data.ApplicationDbContext _context;
+        protected readonly WInnovator.DAL.ApplicationDbContext _context;
         protected readonly IUserIdentityHelper _userIdentityHelper;
 
-        public PageModelWithAppUserMethods(WInnovator.Data.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
+        public PageModelWithAppUserMethods(WInnovator.DAL.ApplicationDbContext context, IUserIdentityHelper userIdentityHelper)
         {
             _context = context;
             _userIdentityHelper = userIdentityHelper;

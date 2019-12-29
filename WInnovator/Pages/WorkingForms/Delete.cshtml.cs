@@ -13,9 +13,9 @@ namespace WInnovator.Pages.WorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class DeleteModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public DeleteModel(WInnovator.Data.ApplicationDbContext context)
+        public DeleteModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }
@@ -30,7 +30,7 @@ namespace WInnovator.Pages.WorkingForms
                 return NotFound();
             }
 
-            WorkingForm = await _context.WorkingForm.FirstOrDefaultAsync(m => m.Id == id);
+            WorkingForm = await _context.WorkingForm.Include(wf => wf.Phase).FirstOrDefaultAsync(m => m.Id == id);
 
             if (WorkingForm == null)
             {

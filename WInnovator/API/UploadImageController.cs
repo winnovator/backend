@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WInnovator.Data;
+using WInnovator.DAL;
 using WInnovator.Models;
 
 namespace WInnovator.API
@@ -57,12 +57,12 @@ namespace WInnovator.API
             }
 
             // Check if the DesignShop has a current WorkingForm set
-            var dswf = await _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId==designShopId && dswf.IsCurrentWorkingForm == true).FirstOrDefaultAsync();
+            var dswf = await _context.DesignShopWorkingForm.Where(dswf => dswf.DesignShopId==designShopId && dswf.UploadEnabled == true && dswf.IsCurrentWorkingForm == true).FirstOrDefaultAsync();
 
             if (dswf == null)
             {
                 // There's no workingform set, return 404 Not Found
-                _logger.LogWarning($"File uploaded for designshop { designShopId }, but there's no current workingform.");
+                _logger.LogWarning($"File uploaded for designshop { designShopId }, but there's no current workingform or upload is disabled.");
                 return NotFound();
             }
 

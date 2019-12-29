@@ -15,9 +15,9 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
     [Authorize(Roles = "Administrator,Facilitator")]
     public class EditModel : PageModel
     {
-        private readonly WInnovator.Data.ApplicationDbContext _context;
+        private readonly WInnovator.DAL.ApplicationDbContext _context;
 
-        public EditModel(WInnovator.Data.ApplicationDbContext context)
+        public EditModel(WInnovator.DAL.ApplicationDbContext context)
         {
             _context = context;
         }
@@ -40,9 +40,10 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
             {
                 return NotFound();
             }
-           ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == DesignShopWorkingForm.DesignShopId), "Id", "Description");
-           ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm, "Id", "Name");
-           TempData["selectedDesignShop"] = DesignShopWorkingForm.DesignShopId;
+            ViewData["DesignShopId"] = new SelectList(_context.DesignShop.Where(ds => ds.Id == DesignShopWorkingForm.DesignShopId), "Id", "Description");
+            ViewData["WorkingFormId"] = new SelectList(_context.WorkingForm.Where(wf => wf.belongsToDesignShopId == null || wf.belongsToDesignShopId == DesignShopWorkingForm.DesignShopId), "Id", "Name");
+            ViewData["PhaseId"] = new SelectList(_context.Phase, "Id", "Name");
+            TempData["selectedDesignShop"] = DesignShopWorkingForm.DesignShopId;
 
             return Page();
         }

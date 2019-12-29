@@ -12,16 +12,22 @@ namespace WInnovator.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Geef een omschrijving op")]
         [Display(Name ="Omschrijving")]
         public string Description { get; set; }
+        [Required(ErrorMessage ="Geef de datum op")]
         [Column(TypeName = "datetime2")]
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Datum")]
         public DateTime Date { get; set; }
-        public string AppUseraccount { get; set; }
+        [Required(ErrorMessage ="Geef de starttijd op")]
+        [DataType(DataType.Time)]
+        [Display(Name = "Starttijd")]
+        public TimeSpan Starttime { get; set; }
+        public string? AppUseraccount { get; set; }
 
-        public virtual ICollection<DesignShopWorkingForm> DesignShopWorkingForms { get; set; }
+        public virtual ICollection<DesignShopWorkingForm>? DesignShopWorkingForms { get; set; }
+        public virtual ICollection<WorkingForm>? WorkingForms { get; set; }
     }
 }

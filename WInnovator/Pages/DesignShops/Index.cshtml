@@ -10,7 +10,7 @@
 </head>
 <body>
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create">Nieuwe DesignShop aanmaken</a>
 </p>
 <table class="table">
     <thead>
@@ -20,6 +20,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DesignShop[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DesignShop[0].Starttime)
             </th>
             <th></th>
         </tr>
@@ -34,9 +37,12 @@
                 @String.Format("{0:dd-MM-yyyy}", item.Date)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                @item.Starttime.ToString(@"hh\:mm")
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Bewerken</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-page="./Delete" asp-route-id="@item.Id">Verwijderen</a>
             </td>
         </tr>
 }

@@ -30,23 +30,30 @@
         @if (Model.DesignShopWorkingForm != null)
         {
             <p>
-                <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Create New</a> |
-                <a asp-page="Reorder" asp-route-designshopId="@Model.currentDesignShopGuid">Wijzig volgorde</a>
+                <a asp-page="Create" asp-route-designshopId="@Model.currentDesignShopGuid">Werkvorm koppelen aan deze DesignShop</a> |
+                <a asp-page="Reorder" asp-route-designshopId="@Model.currentDesignShopGuid">Wijzig volgorde</a> |
+                <a asp-page="/WorkingForms/Create">Nieuwe werkvorm binnen deze DesignShop aanmaken</a>
             </p>
             <table class="table">
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].DesignShop)
+                            Starttijd
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].WorkingForm)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].Order)
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].Implementer)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].IsCurrentWorkingForm)
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].PhaseId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].UploadEnabled)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DesignShopWorkingForm[0].TimeAllocated)
                         </th>
                         <th></th>
                     </tr>
@@ -56,21 +63,27 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.DesignShop.Description)
+                                @item.DesignShop.Starttime.Add(TimeSpan.FromMinutes(Model.DesignShopWorkingForm.Where(wf => wf.Order < item.Order).Sum(wf => wf.TimeAllocated))).ToString(@"hh\:mm")
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.WorkingForm.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Order)
+                                @Html.DisplayFor(modelItem => item.Implementer)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.IsCurrentWorkingForm)
+                                @Html.DisplayFor(modelItem => item.Phase.Name)
                             </td>
                             <td>
-                                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                                @Html.DisplayFor(modelItem => item.UploadEnabled)
+                            </td>
+                            <td>
+                                @TimeSpan.FromMinutes(item.TimeAllocated).ToString(@"hh\:mm")
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@item.Id">Bewerken</a> |
                                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                                <a asp-page="./Delete" asp-route-id="@item.Id">Verwijderen</a>
                             </td>
                         </tr>
                     }

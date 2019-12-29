@@ -10,6 +10,7 @@ namespace WInnovatorTest.API.Fixtures
     {
         public ILogger<UploadImageController> _logger;
         public UploadImageController _controller;
+        public WorkingFormController _workingformController;
         public DesignShop _designShopWithCurrentWorkingForm;
         public DesignShop _designShopWithoutCurrentWorkingForm;
         public DesignShopWorkingForm _currentWorkingForm;
@@ -20,6 +21,7 @@ namespace WInnovatorTest.API.Fixtures
             // Arrange
             _logger = Mock.Of<ILogger<UploadImageController>>();
             _controller = new UploadImageController(_applicationTestDbContext, _logger);
+            _workingformController = new WorkingFormController(_applicationTestDbContext, Mock.Of<ILogger<WorkingFormController>>());
 
             MockData();
         }
@@ -70,6 +72,7 @@ namespace WInnovatorTest.API.Fixtures
                 _applicationTestDbContext.DesignShopWorkingForm.Add(designShopWorkingForm);
                 if (i == 4) { 
                     _currentWorkingForm = designShopWorkingForm;
+                    _currentWorkingForm.UploadEnabled = true;
                     _currentWorkingForm.IsCurrentWorkingForm = true;
                 }
             }
