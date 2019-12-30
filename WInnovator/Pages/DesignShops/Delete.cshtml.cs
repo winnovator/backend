@@ -53,7 +53,10 @@ namespace WInnovator.Pages.DesignShops
 
                 foreach (DesignShopWorkingForm dswf in DesignShop.DesignShopWorkingForms)
                 {
-                    // Check if the WorkingForm belongs to this DesignShop and there are no other instances. If so, delete it!
+                    // First, remove all images from the imagestore
+                    _context.ImageStore.RemoveRange(_context.ImageStore.Where(image => image.DesignShopWorkingFormId == dswf.Id));
+
+                    // Then check if the WorkingForm belongs to this DesignShop and there are no other instances. If so, delete it!
                     if (dswf.WorkingForm.belongsToDesignShopId != null && dswf.WorkingForm.DesignShopWorkingForms.Count == 1)
                     {
                         _context.WorkingForm.Remove(dswf.WorkingForm);

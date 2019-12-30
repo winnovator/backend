@@ -53,7 +53,10 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
 
             if (DesignShopWorkingForm != null)
             {
-                // First, check the parent... If the field belongsTo has been set, remove it as well if this is the only instance of it
+                // First, remove all images from the imagestore
+                _context.ImageStore.RemoveRange(_context.ImageStore.Where(image => image.DesignShopWorkingFormId == DesignShopWorkingForm.Id));
+
+                // Second, check the parent... If the field belongsTo has been set, remove it as well if this is the only instance of it
                 if (DesignShopWorkingForm.WorkingForm.belongsToDesignShopId != null && DesignShopWorkingForm.WorkingForm.DesignShopWorkingForms.Count == 1)
                 {
                     // Check if this is the only one

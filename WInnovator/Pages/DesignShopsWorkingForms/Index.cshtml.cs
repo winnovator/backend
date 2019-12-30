@@ -112,7 +112,7 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
 
         private void LoadDesignShops()
         {
-            listOfDesignShop = _context.DesignShop.Where(ds => ds.Date >= DateTime.UtcNow).OrderBy(ds => ds.Date).ToList();
+            listOfDesignShop = _context.DesignShop.Where(ds => ds.Date >= DateTime.UtcNow.Date).OrderBy(ds => ds.Date).ToList();
             DesignShops = new SelectList(listOfDesignShop, nameof(DesignShop.Id), nameof(DesignShop.Description));
         }
     }
