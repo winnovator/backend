@@ -112,8 +112,7 @@
                 'Authorization': 'Bearer ' + token
             },
             url: callableUrl, success: function (result) {
-                result.description;
-                $('#currentWorkingForm').html('<b>' + result.description + '</b>');
+                $('#currentWorkingForm').html('<b>' + result.name + '</b>');
             }, error: function (xhr, status, error) {
                 if (xhr.status == 404) {
                     $('#currentWorkingForm').html('Er is geen huidige werkvorm');
@@ -152,7 +151,7 @@
             },
             url: "/api/WorkingForm/" + designshopId, success: function (data) {
                 $.each(data, function (key, entry) {
-                    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.description));
+                    dropdown.append($('<option></option>').attr('value', entry.id).text(entry.name));
                 });
             }, error: function (xhr, status, error) {
                 showNotification("Error", "Error retrieving designshopworkingforms.");
