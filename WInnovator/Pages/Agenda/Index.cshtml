@@ -27,7 +27,7 @@
                 </form>
             </div>
         </div>
-        @if (Model.DesignShopWorkingForm != null)
+        @if (Model.DesignShopWorkingForm.Count() > 0)
         {
             <form method="post" class="mb-3">
                 <a class="btn btn-outline-info" id="copyToClipboard" data-clipboard-target="#DesignShopAgenda">Kopieer tabel naar klembord</a> |
@@ -82,6 +82,12 @@
                     }
                 </tbody>
             </table>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <strong>Er zijn geen werkvormen gekoppeld aan deze DesignShop.</strong>
+            </div>
         }
     }
 
