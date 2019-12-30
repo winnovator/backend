@@ -26,6 +26,7 @@ namespace WInnovator.Helper
                 new UserData() { email="marc.hoeve@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
                 new UserData() { email="niek.pruntel@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
                 new UserData() { email="gert.stoevelaar@windesheim.nl", password="Welkom@01", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } },
+                new UserData() { email="r.vande.star@windesheim.nl", password="Welkom@R0b1", defaultRoles=new string[] { "Administrator", "Facilitator", "Gebruiker" } }
             };
         }
     }
