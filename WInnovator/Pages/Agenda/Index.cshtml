@@ -18,20 +18,20 @@
     else
     {
         <div class="row">
-            <div class="col-md-4">
+            <div class="col">
                 <form method="post">
                     <div class="form-group">
                         <label class="control-label">Toon agenda van DesignShop</label>
-                        @Html.DropDownListFor(x => x.CurrentDesignShop, Model.DesignShops, new { @class = "form-control", onchange = "this.form.submit();" })
+                        @Html.DropDownListFor(x => x.CurrentDesignShop, Model.DesignShops, new { @class = "form-control col-md-6 col-lg-5 col-xl-4", onchange = "this.form.submit();" })
                     </div>
                 </form>
             </div>
         </div>
         @if (Model.DesignShopWorkingForm != null)
         {
-            <form method="post">
-                <a class="btn btn-outline-info" id="copyToClipboard" data-clipboard-target="#DesignShopAgenda">Kopieer tabel naar Klikbord</a> |
-                <input type="submit" value="Volgend werkvorm instellen als actief" asp-route-designshopId="@Model.DesignShopWorkingForm[0].DesignShopId" asp-page-handler="Next" class="btn btn-success" />
+            <form method="post" class="mb-3">
+                <a class="btn btn-outline-info" id="copyToClipboard" data-clipboard-target="#DesignShopAgenda">Kopieer tabel naar klembord</a> |
+                <input type="submit" value="Volgende werkvorm instellen als actief" asp-route-designshopId="@Model.DesignShopWorkingForm[0].DesignShopId" asp-page-handler="Next" class="btn btn-success" />
             </form>
 
             <table id="DesignShopAgenda" class="table">

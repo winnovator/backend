@@ -45,7 +45,7 @@ namespace WInnovator.Pages.DesignShops
             }
 
             // Get the current DesignShop with all it's children, including the WorkingForms
-            DesignShop = await _context.DesignShop.Where(ds => ds.Id == id).Include(ds => ds.DesignShopWorkingForms).ThenInclude(dswf => dswf.WorkingForm).FirstOrDefaultAsync();
+            DesignShop = await _context.DesignShop.Where(ds => ds.Id == id).Include(ds => ds.DesignShopWorkingForms).ThenInclude(dswf => dswf.WorkingForm).ThenInclude(wf => wf.DesignShopWorkingForms).FirstOrDefaultAsync();
 
             if (DesignShop != null)
             {
@@ -53,8 +53,8 @@ namespace WInnovator.Pages.DesignShops
 
                 foreach (DesignShopWorkingForm dswf in DesignShop.DesignShopWorkingForms)
                 {
-                    // Check if the WorkingForm belongs to this DesignShop. If so, delete it!
-                    if(dswf.WorkingForm.belongsToDesignShopId != null)
+                    // Check if the WorkingForm belongs to this DesignShop and there are no other instances. If so, delete it!
+                    if (dswf.WorkingForm.belongsToDesignShopId != null && dswf.WorkingForm.DesignShopWorkingForms.Count == 1)
                     {
                         _context.WorkingForm.Remove(dswf.WorkingForm);
                     }

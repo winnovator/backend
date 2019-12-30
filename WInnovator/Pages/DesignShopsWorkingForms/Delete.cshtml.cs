@@ -49,13 +49,14 @@ namespace WInnovator.Pages.DesignShopsWorkingForms
                 return NotFound();
             }
 
-            DesignShopWorkingForm = await _context.DesignShopWorkingForm.Where(dswf => dswf.Id == id).Include(dswf => dswf.WorkingForm).FirstOrDefaultAsync();
+            DesignShopWorkingForm = await _context.DesignShopWorkingForm.Where(dswf => dswf.Id == id).Include(dswf => dswf.WorkingForm).ThenInclude(wf => wf.DesignShopWorkingForms).FirstOrDefaultAsync();
 
             if (DesignShopWorkingForm != null)
             {
-                // First, check the parent... If the field belongsTo has been set, remove it as well.
-                if (DesignShopWorkingForm.WorkingForm.belongsToDesignShopId != null)
+                // First, check the parent... If the field belongsTo has been set, remove it as well if this is the only instance of it
+                if (DesignShopWorkingForm.WorkingForm.belongsToDesignShopId != null && DesignShopWorkingForm.WorkingForm.DesignShopWorkingForms.Count == 1)
                 {
+                    // Check if this is the only one
                     _context.WorkingForm.Remove(DesignShopWorkingForm.WorkingForm);
                 }
                 _context.DesignShopWorkingForm.Remove(DesignShopWorkingForm);
